@@ -27,7 +27,7 @@ class Supply extends React.Component {
                     <h2>Redeem</h2>
                     <div className="d-flex flex-row justify-content-center">
                         <FormControl className="w-25 me-4" placeholder="Amount to Redeem"></FormControl>
-                        <Button className="w-25 m-0" variant="primary">Supply</Button>
+                        <Button className="w-25 m-0" variant="primary">Redeem</Button>
                     </div>
                 </Row>
             </Container>
