@@ -1,0 +1,25 @@
+{
+  "name": "compound-borrow-guide",
+  "version": "2.0.0",
+  "description": "Code examples for borrowing Ethereum assets from the Compound Protocol. https://compound.finance/",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./scripts/run-localhost-fork.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "compound finance",
+    "ethereum",
+    "web3"
+  ],
+  "author": "Compound Labs, Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "@compound-finance/compound-js": "^0.4.1",
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-web3": "^2.0.0",
+    "ethers": "^5.4.7",
+    "hardhat": "^2.6.6",
+    "web3": "^1.6.0"
+  }
+}
