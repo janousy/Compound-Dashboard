@@ -1,5 +1,5 @@
 import {Container} from "react-bootstrap";
-import '../../Styles/MainContent.css'
+import '../../Styles/Organisms/MainContent.css'
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import React from "react";

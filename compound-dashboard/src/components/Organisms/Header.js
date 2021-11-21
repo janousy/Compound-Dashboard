@@ -1,21 +1,13 @@
-import {Container} from "react-bootstrap";
+import {Button, Container} from "react-bootstrap";
 import React from "react";
 import Navbar from "react-bootstrap/cjs/Navbar";
 import NavbarCollapse from "react-bootstrap/NavbarCollapse";
 import Nav from "react-bootstrap/cjs/Nav";
-import '../../Styles/Header.css'
+import '../../Styles/Organisms/Header.css'
 
 class Header extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { connected: false }
-    }
-
-    componentDidMount() {
-        // fake function for metamask update
-        setTimeout(() => {
-            this.setState({connected: true})
-        }, 5000);
     }
 
     render() {
@@ -29,8 +21,9 @@ class Header extends React.Component {
                         </Nav>
                         <Navbar.Text>
                             <div className="d-flex flex-row align-items-center">
+                                <Button id="connectToMetamaskButton" variant="primary">Connect</Button>
                                 Connected to Metamask
-                                <div className="ConnectionIndicator" style={{background: this.state.connected ? "green" : "red"}}/>
+                                <div className="ConnectionIndicator" style={{background: this.props.account ? "green" : "red"}}/>
                             </div>
                         </Navbar.Text>
                     </NavbarCollapse>
