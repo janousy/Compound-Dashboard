@@ -53,10 +53,10 @@ const logBalances = () => {
         const myContractCTokenBalance = +await cToken.methods.balanceOf(borrowContractAddress).call() / 1e8;
 
         console.log(`My Wallet's   ${assetName} Balance:`, myWalletUnderlyingBalance);
-        console.log(`BorrowContract's  ETH Balance:`, myContractEthBalance);
-        console.log(`BorrowContract's cETH Balance:`, myContractCEthBalance);
-        console.log(`BorrowContract's  ${assetName} Balance:`, myContractUnderlyingBalance);
-        console.log(`BorrowContract's c${assetName} Balance:`, myContractCTokenBalance);
+        console.log(`RepayContract's  ETH Balance:`, myContractEthBalance);
+        console.log(`RepayContract's cETH Balance:`, myContractCEthBalance);
+        console.log(`RepayContract's  ${assetName} Balance:`, myContractUnderlyingBalance);
+        console.log(`RepayContract's c${assetName} Balance:`, myContractCTokenBalance);
 
         resolve();
     });
@@ -81,6 +81,11 @@ export async function repayETH(ethToRepayBorrow = 0.002) {
     return result;
 };
 
-repayETH().catch(
-    console.error
-);
+repayETH().catch(async (err) => {
+    console.error('ERROR:', err);
+    // Create "events" and "emit" them in your Solidity code.
+    // Current contract does not have any.
+    let logs = await borrowContract.getPastEvents('allEvents');
+    console.log('Logs: ', logs);
+    return err;
+});

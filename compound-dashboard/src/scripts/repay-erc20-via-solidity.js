@@ -84,4 +84,5 @@ repayErc20().catch(async (err) => {
     // Current contract does not have any.
     let logs = await borrowContract.getPastEvents('allEvents');
     console.log('Logs: ', logs);
+    return err;
 });

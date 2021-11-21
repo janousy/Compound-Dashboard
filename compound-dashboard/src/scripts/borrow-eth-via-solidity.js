@@ -53,44 +53,32 @@ const logBalances = () => {
         const myContractCTokenBalance = +await cToken.methods.balanceOf(borrowContractAddress).call() / 1e8;
 
         console.log(`My Wallet's   ${assetName} Balance:`, myWalletUnderlyingBalance);
-        console.log(`MyContract's  ETH Balance:`, myContractEthBalance);
-        console.log(`MyContract's cETH Balance:`, myContractCEthBalance);
-        console.log(`MyContract's  ${assetName} Balance:`, myContractUnderlyingBalance);
-        console.log(`MyContract's c${assetName} Balance:`, myContractCTokenBalance);
+        console.log(`BorrowContract's  ETH Balance:`, myContractEthBalance);
+        console.log(`BorrowContract's cETH Balance:`, myContractCEthBalance);
+        console.log(`BorrowContract's  ${assetName} Balance:`, myContractUnderlyingBalance);
+        console.log(`BorrowContract's c${assetName} Balance:`, myContractCTokenBalance);
 
         resolve();
     });
 };
 
-export async function borrowETH(numETHToBorrow = 2){
-    console.log('attempting borrow Erc20')
+export async function borrowETH(numETHToBorrow = 2, underlyingAsCollateral = 25) {
 
-    const Web3 = require('web3');
-    const web3 = new Web3('http://127.0.0.1:8545');
-    const {
-        cEthAbi,
-        cErcAbi,
-        erc20Abi,
-    } = require('./contracts/contracts.json');
-
+    console.log(`\nCalling BorrowContract.borrowEthExample with ${underlyingAsCollateral} ${assetName} as collateral...\n`);
     const contractIsDeployed = (await web3.eth.getCode(borrowContractAddress)) !== '0x';
-
     if (!contractIsDeployed) {
-        throw Error('MyContract is not deployed! Deploy it by running the deploy script.');
+        throw Error('BorrowContract is not deployed! Deploy it by running the deploy script.');
     }
 
     await logBalances();
-
-    const underlyingAsCollateral = 25;
+    //const underlyingAsCollateral = 25;
     const mantissa = (underlyingAsCollateral * Math.pow(10, underlyingDecimals)).toString();
-    console.log(`\nSending ${underlyingAsCollateral} ${assetName} to MyContract so it can provide collateral...\n`);
+    console.log(`\nSending ${underlyingAsCollateral} ${assetName} to BorrowContract so it can provide collateral...\n`);
 
+    console.log('ExchangeRateMantissa:' + mantissa)
     // Send underlying to MyContract before attempting the supply
     await underlying.methods.transfer(borrowContractAddress, mantissa).send(fromMyWallet);
-
     await logBalances();
-
-    console.log(`\nCalling MyContract.borrowEthExample with ${underlyingAsCollateral} ${assetName} as collateral...\n`);
 
     //const numWeiToBorrow = 2000000000000000;
     const numWeiToBorrow = Math.pow(numETHToBorrow, 18)
@@ -104,21 +92,16 @@ export async function borrowETH(numETHToBorrow = 2){
     ).send(fromMyWallet);
 
     console.log(result)
-
     //See the solidity functions logs from "MyLog" event
     //console.log(JSON.stringify(result), '\n');
-
     await logBalances();
-
-    /* console.log(`\nNow repaying the borrow...\n`);
-     const ethToRepayBorrow = 0.002; // hard coded borrow in contract
-     result = await borrowContract.methods.myEthRepayBorrow(
-       cEthAddress,
-       web3.utils.toWei(ethToRepayBorrow.toString(), 'ether'),
-       300000 // gas for the "cEth.repayBorrow" function
-     ).send(fromMyWallet);*/
-
-    //await logBalances();
 };
 
-borrowETH().catch(console.error);
+borrowETH().catch(async (err) => {
+    console.error('ERROR:', err);
+    // Create "events" and "emit" them in your Solidity code.
+    // Current contract does not have any.
+    let logs = await borrowContract.getPastEvents('allEvents');
+    console.log('Logs: ', logs);
+    return err;
+});

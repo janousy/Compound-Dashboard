@@ -4,9 +4,9 @@
 const Web3 = require('web3');
 const web3 = new Web3('http://127.0.0.1:8545');
 const {
-  cEthAbi,
-  cErcAbi,
-  erc20Abi,
+    cEthAbi,
+    cErcAbi,
+    erc20Abi,
 } = require('./contracts/contracts.json');
 
 // Your Ethereum wallet private key
@@ -40,88 +40,56 @@ const borrowContractAddress = '0xEcA3eDfD09435C2C7D2583124ca9a44f82aF1e8b';
 const borrowContract = new web3.eth.Contract(borrowContractAbi, borrowContractAddress);
 
 const logBalances = () => {
-  return new Promise(async (resolve, reject) => {
-    let myWalletEthBalance = +web3.utils.fromWei(await web3.eth.getBalance(myWalletAddress));
-    let myContractEthBalance = +web3.utils.fromWei(await web3.eth.getBalance(borrowContractAddress));
-    let myContractCEthBalance = await cEth.methods.balanceOf(borrowContractAddress).call() / 1e8;
-    let myContractUnderlyingBalance = +await underlying.methods.balanceOf(borrowContractAddress).call() / Math.pow(10, underlyingDecimals);
+    return new Promise(async (resolve, reject) => {
+        let myWalletEthBalance = +web3.utils.fromWei(await web3.eth.getBalance(myWalletAddress));
+        let myContractEthBalance = +web3.utils.fromWei(await web3.eth.getBalance(borrowContractAddress));
+        let myContractCEthBalance = await cEth.methods.balanceOf(borrowContractAddress).call() / 1e8;
+        let myContractUnderlyingBalance = +await underlying.methods.balanceOf(borrowContractAddress).call() / Math.pow(10, underlyingDecimals);
 
-    console.log("My Wallet's   ETH Balance:", myWalletEthBalance);
-    console.log("MyContract's  ETH Balance:", myContractEthBalance);
-    console.log("MyContract's cETH Balance:", myContractCEthBalance);
-    console.log(`MyContract's  ${assetName} Balance:`, myContractUnderlyingBalance);
+        console.log("My Wallet's   ETH Balance:", myWalletEthBalance);
+        console.log("MyContract's  ETH Balance:", myContractEthBalance);
+        console.log("MyContract's cETH Balance:", myContractCEthBalance);
+        console.log(`MyContract's  ${assetName} Balance:`, myContractUnderlyingBalance);
 
-    resolve();
-  });
+        resolve();
+    });
 };
 
 export async function borrowErc20(numUnderlyingToBorrow = 10, ethToSupplyAsCollateral = 1) {
-  console.log('attempting borrow Erc20')
 
-  const Web3 = require('web3');
-  const web3 = new Web3('http://127.0.0.1:8545');
-  const {
-    cEthAbi,
-    cErcAbi,
-    erc20Abi,
-  } = require('./contracts/contracts.json');
+    console.log(`\nCalling CompoundBorrow with ${ethToSupplyAsCollateral} ETH for collateral...\n`);
+    const contractIsDeployed = (await web3.eth.getCode(borrowContractAddress)) !== '0x';
+    if (!contractIsDeployed) {
+        throw Error('Compound BorrowContract is not deployed! Deploy it by running the deploy script.');
+    }
+    await logBalances();
 
-  // Your Ethereum wallet private key
-  const privateKey = 'b8c1b5c1d81f9475fdf2e334517d29f733bdfa40682207571b12fc1142cbf329';
-
-// Add your Ethereum wallet to the Web3 object
-  web3.eth.accounts.wallet.add('0x' + privateKey);
-  const myWalletAddress = web3.eth.accounts.wallet[0].address;
-
-  const contractIsDeployed = (await web3.eth.getCode(borrowContractAddress)) !== '0x';
-
-  if (!contractIsDeployed) {
-    throw Error('Compound BorrowContract is not deployed! Deploy it by running the deploy script.');
-  }
-
-  await logBalances();
-
-  console.log(`\nCalling CompoundBorrow with ${ethToSupplyAsCollateral} ETH for collateral...\n`);
-
-  let result = await borrowContract.methods.borrowErc20Example(
-      cEthAddress,
-      comptrollerAddress,
-      priceFeedAddress,
-      cTokenAddress,
-      underlyingDecimals,
-      numUnderlyingToBorrow
+    let result = await borrowContract.methods.borrowErc20Example(
+        cEthAddress,
+        comptrollerAddress,
+        priceFeedAddress,
+        cTokenAddress,
+        underlyingDecimals,
+        numUnderlyingToBorrow
     ).send({
-    from: myWalletAddress,
-    gasLimit: web3.utils.toHex(5000000),
-    gasPrice: web3.utils.toHex(20000000000), // use ethgasstation.info (mainnet only)
-    value: (ethToSupplyAsCollateral * 1e18).toString()
-  });
+        from: myWalletAddress,
+        gasLimit: web3.utils.toHex(5000000),
+        gasPrice: web3.utils.toHex(20000000000), // use ethgasstation.info (mainnet only)
+        value: (ethToSupplyAsCollateral * 1e18).toString()
+    });
 
-  // See the solidity functions logs from "MyLog" event
-  // console.log(result.events.MyLog);
+    // See the solidity functions logs from "MyLog" event
+    // console.log(result.events.MyLog);
+    await logBalances();
 
-  await logBalances();
-
-/*  console.log(`\nNow repaying the borrow...\n`);
-  const underlyingToRepayBorrow = 10;
-  result = await borrowContract.methods.myErc20RepayBorrow(
-      underlyingAddress,
-      cTokenAddress,
-      (underlyingToRepayBorrow * Math.pow(10, underlyingDecimals)).toString()
-    ).send({
-    from: myWalletAddress,
-    gasLimit: web3.utils.toHex(5000000),
-    gasPrice: web3.utils.toHex(20000000000), // use ethgasstation.info (mainnet only)
-  });*/
-
-  return result;
+    return result;
 };
 
 borrowErc20().catch(async (err) => {
-  console.error('ERROR:', err);
+    console.error('ERROR:', err);
 
-  // Create "events" and "emit" them in your Solidity code.
-  // Current contract does not have any.
-  let logs = await borrowContract.getPastEvents('allEvents');
-  console.log('Logs: ', logs);
+    // Create "events" and "emit" them in your Solidity code.
+    // Current contract does not have any.
+    let logs = await borrowContract.getPastEvents('allEvents');
+    console.log('Logs: ', logs);
 });
