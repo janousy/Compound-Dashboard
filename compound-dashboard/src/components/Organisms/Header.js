@@ -6,10 +6,6 @@ import Nav from "react-bootstrap/cjs/Nav";
 import '../../Styles/Organisms/Header.css'
 
 class Header extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <Navbar sticky="top" bg="light" variant="light">

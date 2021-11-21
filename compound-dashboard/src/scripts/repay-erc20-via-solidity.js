@@ -55,7 +55,11 @@ const logBalances = () => {
     });
 };
 
-export async function repayErc20(underlyingToRepayBorrow = 10) {
+export async function repayErc20(underlyingToRepayBorrow) {
+    if (!underlyingToRepayBorrow) {
+        return;
+    }
+
     console.log(`\nCalling CompoundBorrow with ${underlyingToRepayBorrow} Erc20 for repay...\n`);
     const contractIsDeployed = (await web3.eth.getCode(borrowContractAddress)) !== '0x';
     if (!contractIsDeployed) {

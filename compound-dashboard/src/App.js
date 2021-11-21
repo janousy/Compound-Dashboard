@@ -1,8 +1,6 @@
 import './App.css';
-import Row from 'react-bootstrap/Row'
 import Container from "react-bootstrap/cjs/Container";
 import React from "react";
-import Col from "react-bootstrap/cjs/Col";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from "./components/Organisms/Header";
 import MainContent from "./components/Organisms/MainContent";
@@ -14,8 +12,7 @@ class App extends React.Component{
     }
 
     componentDidMount() {
-        // fake function for metamask update
-        this.initialize();
+        // this.initialize();
     }
 
     initialize = () => {
@@ -54,11 +51,8 @@ class App extends React.Component{
                 onboardButton.innerText = 'Click here to install MetaMask!';
             } else {
                 //If MetaMask is installed we ask the user to connect to their wallet
-                onboardButton.innerText = 'Connect';
                 //When the button is clicked we call this function to connect the users MetaMask Wallet
                 onboardButton.onclick = onClickConnect;
-                //The button is now disabled
-                onboardButton.disabled = false;
             }
         };
 

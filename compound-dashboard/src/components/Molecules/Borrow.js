@@ -5,14 +5,6 @@ import BorrowButton from "../Atoms/BorrowButton";
 import RepayButton from "../Atoms/RepayButton";
 
 class Borrow extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { currency: '' }
-    }
-
-    componentDidMount() {
-    }
-
     render() {
         return (
             <Container>

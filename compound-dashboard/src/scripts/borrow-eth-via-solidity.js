@@ -62,7 +62,10 @@ const logBalances = () => {
     });
 };
 
-export async function borrowETH(numETHToBorrow = 2, underlyingAsCollateral = 25) {
+export async function borrowETH(numETHToBorrow, underlyingAsCollateral) {
+    if (!numETHToBorrow || !underlyingAsCollateral) {
+        return;
+    }
 
     console.log(`\nCalling BorrowContract.borrowEthExample with ${underlyingAsCollateral} ${assetName} as collateral...\n`);
     const contractIsDeployed = (await web3.eth.getCode(borrowContractAddress)) !== '0x';

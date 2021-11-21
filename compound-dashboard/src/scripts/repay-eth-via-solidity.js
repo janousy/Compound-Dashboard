@@ -62,7 +62,11 @@ const logBalances = () => {
     });
 };
 
-export async function repayETH(ethToRepayBorrow = 0.002) {
+export async function repayETH(ethToRepayBorrow) {
+    if (!ethToRepayBorrow) {
+        return;
+    }
+
     console.log(`\nCalling CompoundBorrow with ${ethToRepayBorrow} ETH for repay...\n`);
     const contractIsDeployed = (await web3.eth.getCode(borrowContractAddress)) !== '0x';
     if (!contractIsDeployed) {

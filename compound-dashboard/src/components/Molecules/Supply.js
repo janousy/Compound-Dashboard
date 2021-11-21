@@ -5,14 +5,6 @@ import SupplyButton from "../Atoms/SupplyButton";
 import RedeemButton from "../Atoms/RedeemButton";
 
 class Supply extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { currency: '' }
-    }
-
-    componentDidMount() {
-    }
-
     render() {
         return (
             <Container>

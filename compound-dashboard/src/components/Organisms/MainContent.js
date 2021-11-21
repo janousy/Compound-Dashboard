@@ -20,7 +20,7 @@ class MainContent extends React.Component {
     render() {
         return (
             <Container className="" fluid>
-                <Row className="Spacer pt-4">
+                <Row className="Spacer">
                 </Row>
                 <Row>
                     <Col>

@@ -4,6 +4,7 @@ import {Button, Dropdown, DropdownButton, FormControl, FormText, Spinner, Alert}
 import '../../Styles/Molecules/Borrow.css';
 import {borrowErc20} from "../../scripts/borrow-erc20-via-solidity";
 import {borrowETH} from "../../scripts/borrow-eth-via-solidity";
+import {CONSTANTS} from "../../const/const";
 
 
 class BorrowButton extends React.Component {
@@ -21,20 +22,16 @@ class BorrowButton extends React.Component {
         }
     }
 
-    componentDidMount() {
-    }
-
     handleBorrowCurrency = (event) => {
-        console.log(event)
-        if (event === 'UZHETH') {
+        if(event === 'UZHETH') {
             this.setState({currency: event, collateral: 'ERC20'})
         } else {
             this.setState({currency: event, collateral: 'UZHETH'})
         }
-    }
+    };
 
     onClickBorrow = async () => {
-        this.setState({showFunctionLoading: true, showAlertSuccess: false, showAlertFailure: false})
+        this.setState({showFunctionLoading: true, showAlertSuccess: false, showAlertFailure: false});
         try {
             let transaction = {};
             if (this.state.currency === 'ERC20') {
@@ -44,28 +41,36 @@ class BorrowButton extends React.Component {
             } else {
                 console.log("invalid currency");
             }
-            console.log(JSON.stringify(transaction))
+            console.log(JSON.stringify(transaction));
             this.setState({
                 showFunctionLoading: false,
                 showAlertSuccess: true,
                 showAlertFailure: false,
-                transactionMessage: transaction
-            })
+                transactionMessage: transaction,
+                borrowAmount: 0,
+                collateralAmount: 0,
+            });
+            setTimeout(() => {
+                this.setState({showAlertSuccess: false, transaction: ''});
+            }, CONSTANTS.errorTiming);
         } catch (error) {
-            console.error(error)
+            console.error(error);
             const message = error.message;
             this.setState({
                 showFunctionLoading: false,
                 showAlertSuccess: false,
                 showAlertFailure: true,
                 transactionMessage: message
-            })
+            });
+            setTimeout(() => {
+                this.setState({showAlertFailure: false, transaction: ''});
+            }, CONSTANTS.errorTiming);
         }
-    }
+    };
 
     render() {
         return (
-            <Row className="ms-3">
+            <Row className="ms-3 d-block">
                 <div className="d-flex flex-column BoxContainer">
                     <div className="SubTitle mt-2">Borrow</div>
                     <FormText>Amount to borrow</FormText>

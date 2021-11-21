@@ -1,9 +1,11 @@
 import React from "react";
 import Row from "react-bootstrap/Row";
-import {Alert, Button, Dropdown, DropdownButton, FormControl, FormText, InputGroup, Spinner} from "react-bootstrap";
+import {Alert, Button, Dropdown, DropdownButton, FormControl, FormText, Spinner} from "react-bootstrap";
 import '../../Styles/Molecules/Borrow.css';
 import {repayErc20} from "../../scripts/repay-erc20-via-solidity";
 import {repayETH} from "../../scripts/repay-eth-via-solidity";
+import {CONSTANTS} from "../../const/const";
+
 
 class RepayButton extends React.Component {
     constructor(props) {
@@ -18,17 +20,13 @@ class RepayButton extends React.Component {
         }
     }
 
-    componentDidMount() {
-    }
-
     handleRepayCurrency = (event) => {
-        console.log(event)
-        if (event === 'UZHETH') {
+        if(event === 'UZHETH') {
             this.setState({currency: event, collateral: 'ERC20'})
         } else {
             this.setState({currency: event, collateral: 'UZHETH'})
         }
-    }
+    };
 
     onClickRepay = async () => {
         this.setState({showFunctionLoading: true, showAlertSucces: false, showAlertFailure: false})
@@ -41,24 +39,31 @@ class RepayButton extends React.Component {
             } else {
                 console.log("invalid currency");
             }
-            console.log(JSON.stringify(transaction))
+            console.log(JSON.stringify(transaction));
             this.setState({
                 showFunctionLoading: false,
                 showAlertSuccess: true,
                 showAlertFailure: false,
-                transactionMessage: transaction
-            })
+                transactionMessage: transaction,
+                repayAmount: 0,
+            });
+            setTimeout(() => {
+                this.setState({showAlertSuccess: false, transaction: ''});
+            }, CONSTANTS.errorTiming);
         } catch (error) {
-            console.error(error)
+            console.error(error);
             const message = error.message;
             this.setState({
                 showFunctionLoading: false,
                 showAlertSuccess: false,
                 showAlertFailure: true,
                 transactionMessage: message
-            })
+            });
+            setTimeout(() => {
+                this.setState({showAlertFailure: false, transaction: ''});
+            }, CONSTANTS.errorTiming);
         }
-    }
+    };
 
     render() {
         return (
