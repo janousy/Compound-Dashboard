@@ -1,5 +1,6 @@
 // Example to borrow DAI (or any ERC20 token) using ETH as collateral
 // from a Solidity smart contract
+
 const Web3 = require('web3');
 const web3 = new Web3('http://127.0.0.1:8545');
 const {
@@ -55,7 +56,7 @@ const logBalances = () => {
 };
 
 export async function borrowErc20(numUnderlyingToBorrow = 10, ethToSupplyAsCollateral = 1) {
-  console.log('attempting borrow')
+  console.log('attempting borrow Erc20')
 
   const Web3 = require('web3');
   const web3 = new Web3('http://127.0.0.1:8545');
@@ -113,7 +114,7 @@ export async function borrowErc20(numUnderlyingToBorrow = 10, ethToSupplyAsColla
     gasPrice: web3.utils.toHex(20000000000), // use ethgasstation.info (mainnet only)
   });*/
 
-  await logBalances();
+  return result;
 };
 
 borrowErc20().catch(async (err) => {
