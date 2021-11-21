@@ -21,7 +21,7 @@ class Header extends React.Component {
                         </Nav>
                         <Navbar.Text>
                             <div className="d-flex flex-row align-items-center">
-                                <Button id="connectToMetamaskButton" variant="primary">Connect</Button>
+                                <Button id="connectToMetamaskButton" className="me-3" variant="primary">Connect</Button>
                                 Connected to Metamask
                                 <div className="ConnectionIndicator" style={{background: this.props.account ? "green" : "red"}}/>
                             </div>

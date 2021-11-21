@@ -38,6 +38,7 @@ class App extends React.Component{
                 await ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await ethereum.request({ method: 'eth_accounts' });
                 this.setState({account: accounts[0]});
+                onboardButton.disabled = true;
 
             } catch (error) {
                 console.error(error);

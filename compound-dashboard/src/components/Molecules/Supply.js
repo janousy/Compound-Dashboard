@@ -1,13 +1,13 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import {Button, FormControl, InputGroup} from "react-bootstrap";
-
+import '../../Styles/Molecules/Supply.css';
+import SupplyButton from "../Atoms/SupplyButton";
+import RedeemButton from "../Atoms/RedeemButton";
 
 class Supply extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {  }
+        this.state = { currency: '' }
     }
 
     componentDidMount() {
@@ -16,20 +16,11 @@ class Supply extends React.Component {
     render() {
         return (
             <Container>
-                <Row className="w-auto">
-                    <h2>Supply</h2>
-                    <div className="d-flex flex-row justify-content-center">
-                        <FormControl className="w-25 me-4" placeholder="Amount to Supply"></FormControl>
-                        <Button className="w-25 m-0" variant="primary">Supply</Button>
-                    </div>
-                </Row>
-                <Row>
-                    <h2>Redeem</h2>
-                    <div className="d-flex flex-row justify-content-center">
-                        <FormControl className="w-25 me-4" placeholder="Amount to Redeem"></FormControl>
-                        <Button className="w-25 m-0" variant="primary">Redeem</Button>
-                    </div>
-                </Row>
+                <div className="Title mb-4">Supply Functions</div>
+                <div className="d-flex justify-content-between">
+                    <SupplyButton></SupplyButton>
+                    <RedeemButton></RedeemButton>
+                </div>
             </Container>
         )
     }
