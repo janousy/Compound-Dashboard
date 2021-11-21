@@ -6,6 +6,7 @@ import React from "react";
 import Supply from "../Molecules/Supply";
 import Borrow from "../Molecules/Borrow";
 import Market from "../Molecules/Market";
+import UserStats from "../Molecules/UserStats";
 
 class MainContent extends React.Component {
     constructor(props) {
@@ -32,7 +33,12 @@ class MainContent extends React.Component {
                         </div>
                     </Col>
                     <Col>
-                        <Market></Market>
+                        <div>
+                            <Market></Market>
+                        </div>
+                        <div className="mt-5">
+                            <UserStats></UserStats>
+                        </div>
                     </Col>
                 </Row>
             </Container>
