@@ -1,11 +1,11 @@
 import React from "react";
 import {Tabs, Tab, Row, Col, Container, Card, Button} from "react-bootstrap";
-import '../../Styles/Molecules/Supply.css';
+import '../../Styles/Molecules/Stats.css';
 import Web3 from "web3";
 import {cErcAbi, cEthAbi, erc20Abi} from "../../scripts/contracts/contracts.json";
 import {abi as borrowContractAbi} from "../../scripts/contracts/CompoundBorrow.json";
-import { FaBeer } from 'react-icons/fa';
-import { ImSpinner11 } from "react-icons/im";
+import {FaBeer} from 'react-icons/fa';
+import {ImSpinner11} from "react-icons/im";
 
 class UserStats extends React.Component {
     constructor(props) {
@@ -15,7 +15,7 @@ class UserStats extends React.Component {
             totalETHBorrow: 0,
             totalErc20Supply: 0,
             totalErc20Borrow: 0,
-        }
+        };
         this.getEthMarket.bind(this)
     }
 
@@ -103,31 +103,60 @@ class UserStats extends React.Component {
 
     render() {
         return (
-            <Container>
-                <Row>
-                    <Col sm={10}><div className="Title mb-4">Your Assets</div></Col>
-                    <Col sm={2}><Button variant="light" onClick={this.handleRefreshMarkets}><ImSpinner11/></Button></Col>
+            <div className="StatsComponent">
+                <Row className="position-relative">
+                    <div className="Title mb-4 p-0">Your Assets</div>
+                    <Button className="ButtonStats" variant="primary" onClick={this.handleRefreshMarkets}>
+                        <ImSpinner11/>
+                    </Button>
                 </Row>
-                <Tabs defaultActiveKey="uzheth" id="uncontrolled-tab-example" className="mb-3">
-                    <Tab eventKey="uzheth" title="UZHETH">
-                        <Card>
-                            <Container>
-                                <Row>
-                                    <Col>Total Supply</Col>
-                                    <Col>Total Borrow</Col>
+                <Row>
+                    <div className="BoxContainerUser">
+                        <Tabs defaultActiveKey="uzheth" id="uncontrolled-tab-example" className="mb-3">
+                            <Tab eventKey="uzheth" title="UZHETH">
+                                <Row className="pb-3">
+                                    <Col className="ps-4">
+                                        <div>
+                                            Total Supply
+                                        </div>
+                                        <div>
+                                            {this.state.totalETHSupply} UZHETH
+                                        </div>
+                                    </Col>
+                                    <Col>
+                                        <div>
+                                            Total Borrow
+                                        </div>
+                                        <div>
+                                            {this.state.totalETHBorrow} UZHETH
+                                        </div>
+                                    </Col>
                                 </Row>
-                                <Row>
-                                    <Col>{this.state.totalErc20Supply}</Col>
-                                    <Col>{this.state.totalETHBorrow}</Col>
+                            </Tab>
+                            <Tab eventKey="erc20" title="ERC20">
+                                <Row className="pb-3">
+                                    <Col className="ps-4">
+                                        <div>
+                                            Total Supply
+                                        </div>
+                                        <div>
+                                            {this.state.totalErc20Supply} ERC20
+                                        </div>
+                                    </Col>
+                                    <Col>
+                                        <div>
+                                            Total Borrow
+                                        </div>
+                                        <div>
+                                            {this.state.totalErc20Borrow} ERC20
+                                        </div>
+                                    </Col>
                                 </Row>
-                            </Container>
-                        </Card>
-                    </Tab>
-                    <Tab eventKey="erc20" title="ERC20">
-                        <p>ERC20</p>
-                    </Tab>
-                </Tabs>
-            </Container>
+                            </Tab>
+                        </Tabs>
+                    </div>
+                </Row>
+            </div>
         )
     }
 }
