@@ -7,3 +7,8 @@ export const ADDRESSES = {
     priceFeedAddress: '0x6d2299c48a8dd07a872fdd0f8233924872ad1071',
     borrowContractAddress: '0xEcA3eDfD09435C2C7D2583124ca9a44f82aF1e8b',
 };
+
+export const ERC20 = {
+    name: 'DAI',
+    decimals: 18
+}

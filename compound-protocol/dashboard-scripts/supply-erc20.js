@@ -54,7 +54,7 @@ const main = async function() {
 
   let transferResult = await underlying.methods.transfer(
     supplyContractAddress,
-    web3.utils.toHex(10 * Math.pow(10, underlyingDecimals)) // 10 tokens to send to MyContract
+    web3.utils.toHex(1 * Math.pow(10, underlyingDecimals)) // 10 tokens to send to MyContract
   ).send(fromMyWallet);
 
   console.log(`MyContract now has ${assetName} to supply to the Compound Protocol.`);
@@ -64,7 +64,7 @@ const main = async function() {
   let supplyResult = await supplyContract.methods.supplyErc20ToCompound(
     underlyingMainnetAddress,
     cTokenAddress,
-    web3.utils.toHex(10 * Math.pow(10, underlyingDecimals)) // 10 tokens to supply
+    web3.utils.toHex(1 * Math.pow(10, underlyingDecimals)) // 10 tokens to supply
   ).send(fromMyWallet);
 
   console.log(`Supplied ${assetName} to Compound via MyContract`);

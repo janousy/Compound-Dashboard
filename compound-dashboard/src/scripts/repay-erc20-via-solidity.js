@@ -1,7 +1,7 @@
 // Example to borrow DAI (or any ERC20 token) using ETH as collateral
 // from a Solidity smart contract
 
-const Web3 = require('web3');
+/*const Web3 = require('web3');
 const web3 = new Web3('http://127.0.0.1:8545');
 const {
     cEthAbi,
@@ -53,7 +53,12 @@ const logBalances = () => {
 
         resolve();
     });
-};
+};*/
+
+import {getWalletAddress, getWeb3Instance, logBalancesBorrow} from "./utils";
+import {cErcAbi, cEthAbi, erc20Abi} from "./contracts/contracts.json";
+import {ADDRESSES, ERC20} from "../const/addresses";
+import {abi as borrowContractAbi} from "./contracts/CompoundBorrow.json";
 
 export async function repayErc20(underlyingToRepayBorrow) {
     if (!underlyingToRepayBorrow) {
@@ -61,25 +66,41 @@ export async function repayErc20(underlyingToRepayBorrow) {
         return;
     }
 
+    const {
+        cEthAbi,
+        cErcAbi,
+        erc20Abi,
+    } = require('./contracts/contracts.json');
+
+    const web3 = getWeb3Instance();
+    const cEth = new web3.eth.Contract(cEthAbi, ADDRESSES.cEthAddress);
+    const underlying = new web3.eth.Contract(erc20Abi, ADDRESSES.underlyingAddress);
+    const cToken = new web3.eth.Contract(cErcAbi, ADDRESSES.cTokenAddress);
+    const borrowContractAbi = require('./contracts/CompoundBorrow.json').abi;
+    const borrowContract = new web3.eth.Contract(borrowContractAbi, ADDRESSES.borrowContractAddress);
+
     console.log(`\nCalling CompoundBorrow with ${underlyingToRepayBorrow} Erc20 for repay...\n`);
-    const contractIsDeployed = (await web3.eth.getCode(borrowContractAddress)) !== '0x';
+    const contractIsDeployed = (await web3.eth.getCode(ADDRESSES.borrowContractAddress)) !== '0x';
     if (!contractIsDeployed) {
         throw Error('Compound BorrowContract is not deployed! Deploy it by running the deploy script.');
     }
-    await logBalances();
+
+    const myWalletAddress = await getWalletAddress();
+
+    await logBalancesBorrow(web3, myWalletAddress, cEth, cToken, underlying, ERC20.name, ERC20.decimals);
 
     //const underlyingToRepayBorrow = 10;
     let result = await borrowContract.methods.myErc20RepayBorrow(
-        underlyingAddress,
-        cTokenAddress,
-        (underlyingToRepayBorrow * Math.pow(10, underlyingDecimals)).toString()
+        ADDRESSES.underlyingAddress,
+        ADDRESSES.cTokenAddress,
+        (underlyingToRepayBorrow * Math.pow(10, ERC20.decimals)).toString()
     ).send({
         from: myWalletAddress,
         gasLimit: web3.utils.toHex(5000000),
         gasPrice: web3.utils.toHex(20000000000), // use ethgasstation.info (mainnet only)
     });
 
-    await logBalances();
+    await logBalancesBorrow(web3, myWalletAddress, cEth, cToken, underlying, ERC20.name, ERC20.decimals);
     return result;
 };
 
@@ -87,6 +108,8 @@ repayErc20().catch(async (err) => {
     console.error('ERROR:', err);
     // Create "events" and "emit" them in your Solidity code.
     // Current contract does not have any.
+    const web3 = getWeb3Instance();
+    const borrowContract = new web3.eth.Contract(borrowContractAbi, ADDRESSES.borrowContractAddress);
     let logs = await borrowContract.getPastEvents('allEvents');
     console.log('Logs: ', logs);
     return err;

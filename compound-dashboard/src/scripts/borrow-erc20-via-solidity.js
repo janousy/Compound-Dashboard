@@ -1,27 +1,9 @@
 // Example to borrow DAI (or any ERC20 token) using ETH as collateral
 // from a Solidity smart contract
 
-import {getWeb3Instance} from "./utils";
-import {ADDRESSES} from "../const/addresses";
+import {getWalletAddress, getWeb3Instance, logBalancesBorrow} from "./utils";
+import {ADDRESSES, ERC20} from "../const/addresses";
 import {abi as borrowContractAbi} from "./contracts/CompoundBorrow.json";
-
-const logBalances = (web3, myWalletAddress, cEth, underlying, underlyingDecimals) => {
-    return new Promise(async (resolve, reject) => {
-        let myWalletEthBalance = +web3.utils.fromWei(await web3.eth.getBalance(myWalletAddress));
-        let myContractEthBalance = +web3.utils.fromWei(await web3.eth.getBalance(ADDRESSES.borrowContractAddress));
-        let myContractCEthBalance = await cEth.methods.balanceOf(ADDRESSES.borrowContractAddress).call() / 1e8;
-        let myContractUnderlyingBalance = +await underlying.methods.balanceOf(ADDRESSES.borrowContractAddress).call() / Math.pow(10, underlyingDecimals);
-
-        const assetName = 'DAI'; // for the log output lines
-
-        console.log("My Wallet's   ETH Balance:", myWalletEthBalance);
-        console.log("MyContract's  ETH Balance:", myContractEthBalance);
-        console.log("MyContract's cETH Balance:", myContractCEthBalance);
-        console.log(`MyContract's  ${assetName} Balance:`, myContractUnderlyingBalance);
-
-        resolve();
-    });
-};
 
 export async function borrowErc20(numUnderlyingToBorrow, ethToSupplyAsCollateral) {
     console.log(`\nCalling CompoundBorrow with ${ethToSupplyAsCollateral} ETH for collateral...\n`);
@@ -49,20 +31,18 @@ export async function borrowErc20(numUnderlyingToBorrow, ethToSupplyAsCollateral
         throw Error('Compound BorrowContract is not deployed! Deploy it by running the deploy script.');
     }
 
-    const { ethereum } = window;
-    await ethereum.request({ method: 'eth_requestAccounts' });
-    let myWalletAddress = await ethereum.request({method: 'eth_accounts'});
-    myWalletAddress = myWalletAddress[0];
+    const myWalletAddress = await getWalletAddress();
 
-    const underlyingDecimals = 18; // Number of decimals defined in this ERC20 token's contract
-    await logBalances(web3, myWalletAddress, cEth, underlying, underlyingDecimals);
+    await logBalancesBorrow(web3, myWalletAddress, cEth, cToken, underlying, ERC20.name, ERC20.decimals);
+    console.log(`\nSending ${ethToSupplyAsCollateral} ETH or ${ethToSupplyAsCollateral * 1e18} WEI to BorrowContract so it can provide collateral...\n`);
+    console.log(`\nBorrowing ${numUnderlyingToBorrow} ${ERC20.name}...\n`);
 
     let result = await borrowContract.methods.borrowErc20Example(
         ADDRESSES.cEthAddress,
         ADDRESSES.comptrollerAddress,
         ADDRESSES.priceFeedAddress,
         ADDRESSES.cTokenAddress,
-        underlyingDecimals,
+        ERC20.decimals,
         numUnderlyingToBorrow
     ).send({
         from: myWalletAddress,
@@ -73,7 +53,7 @@ export async function borrowErc20(numUnderlyingToBorrow, ethToSupplyAsCollateral
 
     // See the solidity functions logs from "MyLog" event
     // console.log(result.events.MyLog);
-    await logBalances(web3, myWalletAddress, cEth, underlying, underlyingDecimals);
+    await logBalancesBorrow(web3, myWalletAddress, cEth, cToken, underlying, ERC20.name, ERC20.decimals);
 
     return result;
 };
@@ -85,5 +65,6 @@ borrowErc20().catch(async (err) => {
     const web3 = getWeb3Instance();
     const borrowContract = new web3.eth.Contract(borrowContractAbi, ADDRESSES.borrowContractAddress);
     let logs = await borrowContract.getPastEvents('allEvents');
-    //console.log('Logs: ', logs);
+    console.log('Logs: ', logs);
+    return err;
 });

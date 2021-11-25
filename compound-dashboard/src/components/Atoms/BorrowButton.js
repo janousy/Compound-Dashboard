@@ -101,7 +101,7 @@ class BorrowButton extends React.Component {
                     </Button>
                     <Spinner hidden={!this.state.showFunctionLoading} animation="border" role="status"/>
                     <Alert hidden={!this.state.showAlertSuccess} variant='success'>
-                        <p>Successfully repaid!</p>
+                        <p>Successfully borrowed!</p>
                     </Alert>
                     <Alert hidden={!this.state.showAlertFailure} variant='danger'>
                         <p>Transaction failed!</p>
