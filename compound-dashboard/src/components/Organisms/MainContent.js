@@ -34,8 +34,10 @@ class MainContent extends React.Component {
                     </Col>
                     <Col>
                         <div>
+                            <Market></Market>
                         </div>
                         <div className="mt-5">
+                            <UserStats></UserStats>
                         </div>
                     </Col>
                 </Row>

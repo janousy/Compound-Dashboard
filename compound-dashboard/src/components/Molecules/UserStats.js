@@ -1,104 +1,42 @@
 import React from "react";
-import {Tabs, Tab, Row, Col, Container, Card, Button} from "react-bootstrap";
+import { Tabs, Tab, Row, Col, Container, Card, Button, ListGroup } from "react-bootstrap";
 import '../../Styles/Molecules/Stats.css';
-import Web3 from "web3";
-import {cErcAbi, cEthAbi, erc20Abi} from "../../scripts/contracts/contracts.json";
-import {abi as borrowContractAbi} from "../../scripts/contracts/CompoundBorrow.json";
-import {FaBeer} from 'react-icons/fa';
-import {ImSpinner11} from "react-icons/im";
+import { cErcAbi, cEthAbi, erc20Abi } from "../../scripts/contracts/contracts.json";
+import { ImSpinner11 } from "react-icons/im";
+import { getUserStats } from "../../scripts/utils";
 
 class UserStats extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            totalETHSupply: 0,
-            totalETHBorrow: 0,
-            totalErc20Supply: 0,
-            totalErc20Borrow: 0,
+            ethBalance: 0,
+            cEthBalance: 0,
+            erc20Balance: 0,
+            cErc20Balance: 0,
         };
-        this.getEthMarket.bind(this)
-    }
-
-    componentDidUpdate() {
-        this.getEthMarket().then();
     }
 
     componentDidMount() {
     }
 
-    handleRefreshMarkets() {
-        this.getEthMarket().then();
-    }
-
-    toScientific(x, f) {
-        return Number.parseFloat(x).toExponential(f);
-    }
-
-    async getEthMarket() {
-        // Example to supply DAI as collateral and borrow ETH
-// YOU MUST HAVE DAI IN YOUR WALLET before you run this script
-        const Web3 = require('web3');
-        const web3 = new Web3('http://127.0.0.1:8545');
+    async handleRefreshMarkets() {
         const {
             cEthAbi,
             cErcAbi,
             erc20Abi,
         } = require("../../scripts/contracts/contracts.json");
 
-        // Your Ethereum wallet private key
-        const privateKey = 'b8c1b5c1d81f9475fdf2e334517d29f733bdfa40682207571b12fc1142cbf329';
+        let userStats = await getUserStats(cEthAbi, cErcAbi, erc20Abi)
 
-        // Add your Ethereum wallet to the Web3 object
-        web3.eth.accounts.wallet.add('0x' + privateKey);
-        const myWalletAddress = web3.eth.accounts.wallet[0].address;
+        console.log(userStats);
+        console.log(userStats.ethBalance);
 
-        // Mainnet Contract for the Comptroller
-        const comptrollerAddress = '0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b';
-
-        // Mainnet Contract for cETH
-        const cEthAddress = '0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5';
-        const cEth = new web3.eth.Contract(cEthAbi, cEthAddress);
-
-        // Mainnet address of underlying token (like DAI or USDC)
-        const underlyingAddress = '0x6b175474e89094c44da98b954eedeac495271d0f'; // Dai
-        const underlying = new web3.eth.Contract(erc20Abi, underlyingAddress);
-
-        // Mainnet address for a cToken (like cDai, https://compound.finance/docs#networks)
-        const cTokenAddress = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643'; // cDai
-        const cToken = new web3.eth.Contract(cErcAbi, cTokenAddress);
-        const assetName = 'DAI'; // for the log output lines
-        const underlyingDecimals = 18; // Number of decimals defined in this ERC20 token's contract
-
-        // MyContract
-        //const borrowContractAbi = require('./contracts/CompoundBorrow.json').abi;
-        const borrowContractAddress = '0xEcA3eDfD09435C2C7D2583124ca9a44f82aF1e8b';
-        const borrowContract = new web3.eth.Contract(borrowContractAbi, borrowContractAddress);
-
-        // Web3 transaction information, we'll use this for every transaction we'll send
-        const fromMyWallet = {
-            from: myWalletAddress,
-            gasLimit: web3.utils.toHex(4000000),
-            gasPrice: web3.utils.toHex(25000000000) // use ethgasstation.info (mainnet only)
-        };
-
-        const myWalletUnderlyingBalance = +await underlying.methods.balanceOf(myWalletAddress).call() / 1e18;
-        const myContractEthBalance = +web3.utils.fromWei(await web3.eth.getBalance(borrowContractAddress));
-        const myContractCEthBalance = await cEth.methods.balanceOf(borrowContractAddress).call() / 1e8;
-        const myContractUnderlyingBalance = +await underlying.methods.balanceOf(borrowContractAddress).call() / 1e18;
-        const myContractCTokenBalance = +await cToken.methods.balanceOf(borrowContractAddress).call() / 1e8;
-
-        this.setState({
-            totalETHSupply: myContractEthBalance,
-            totalETHBorrow: myContractCEthBalance,
-            totalErc20Supply: myContractUnderlyingBalance,
-            totalErc20Borrow: myContractCTokenBalance,
-        })
-
-/*        console.log(`My Wallet's   ${assetName} Balance:`, myWalletUnderlyingBalance);
-        console.log(`RepayContract's  ETH Balance:`, myContractEthBalance);
-        console.log(`RepayContract's cETH Balance:`, myContractCEthBalance);
-        console.log(`RepayContract's  ${assetName} Balance:`, myContractUnderlyingBalance);
-        console.log(`RepayContract's c${assetName} Balance:`, myContractCTokenBalance);*/
+        this.setState((state) => ({
+            ethBalance: userStats.ethBalance,
+            cEthBalance: userStats.cEthBalance,
+            erc20Balance: userStats.erc20Balance,
+            cErcBalance: userStats.cErc20Balance,
+        }));
     }
 
     render() {
@@ -106,54 +44,36 @@ class UserStats extends React.Component {
             <div className="StatsComponent">
                 <Row className="position-relative">
                     <div className="Title mb-4 p-0">Your Assets</div>
-                    <Button className="ButtonStats" variant="primary" onClick={this.handleRefreshMarkets}>
-                        <ImSpinner11/>
+                    <Button className="ButtonStats" variant="primary" onClick={this.handleRefreshMarkets.bind(this)}>
+                        <ImSpinner11 />
                     </Button>
                 </Row>
                 <Row>
                     <div className="BoxContainerUser">
-                        <Tabs defaultActiveKey="uzheth" id="uncontrolled-tab-example" className="mb-3">
-                            <Tab eventKey="uzheth" title="UZHETH">
-                                <Row className="pb-3">
-                                    <Col className="ps-4">
-                                        <div>
-                                            Total Supply
-                                        </div>
-                                        <div>
-                                            {this.state.totalETHSupply} UZHETH
-                                        </div>
-                                    </Col>
-                                    <Col>
-                                        <div>
-                                            Total Borrow
-                                        </div>
-                                        <div>
-                                            {this.state.totalETHBorrow} UZHETH
-                                        </div>
-                                    </Col>
-                                </Row>
-                            </Tab>
-                            <Tab eventKey="erc20" title="ERC20">
-                                <Row className="pb-3">
-                                    <Col className="ps-4">
-                                        <div>
-                                            Total Supply
-                                        </div>
-                                        <div>
-                                            {this.state.totalErc20Supply} ERC20
-                                        </div>
-                                    </Col>
-                                    <Col>
-                                        <div>
-                                            Total Borrow
-                                        </div>
-                                        <div>
-                                            {this.state.totalErc20Borrow} ERC20
-                                        </div>
-                                    </Col>
-                                </Row>
-                            </Tab>
-                        </Tabs>
+                        <ListGroup variant='flush'>
+                            <ListGroup.Item>
+                                <div className="d-flex flex-row justify-content-between">
+                                    <p>UZHETH</p>
+                                    <p>{this.state.ethBalance}</p>
+                                </div>
+                            </ListGroup.Item>
+                            <ListGroup.Item>
+                                <div className="d-flex flex-row justify-content-between">
+                                    <p>cUZHETH</p>
+                                    <p>{this.state.cEthBalance}</p>
+                                </div>
+                            </ListGroup.Item>                            <ListGroup.Item>
+                                <div className="d-flex flex-row justify-content-between">
+                                    <p>ERC20</p>
+                                    <p>{this.state.erc20Balance}</p>
+                                </div>
+                            </ListGroup.Item>                            <ListGroup.Item>
+                                <div className="d-flex flex-row justify-content-between">
+                                    <p>cErc20</p>
+                                    <p>{this.state.cErc20Balance}</p>
+                                </div>
+                            </ListGroup.Item>
+                        </ListGroup>
                     </div>
                 </Row>
             </div>

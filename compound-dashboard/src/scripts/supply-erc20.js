@@ -13,7 +13,6 @@ const logBalances = (web3, myWalletAddress, underlying, underlyingDecimals) => {
         const assetName = 'DAI'; // for the log output lines
 
         console.log("My Wallet's   ETH Balance:", myWalletEthBalance);
-        console.log("MyContract's  ETH Balance:", myContractEthBalance);
         console.log(`MyContract's  ${assetName} Balance:`, myContractUnderlyingBalance);
 
         resolve();
