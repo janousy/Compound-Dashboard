@@ -10,13 +10,15 @@ const supplyAbi = require('./contracts/CompoundSupply').abi;
 const supplyContract = new web3.eth.Contract(supplyAbi, supplyContractAddress);
 
 // Main net contract address and ABI for cETH, which can be found in the mainnet
-const compoundCEthContractAddress = ADDRESSES.compoundCEthContractAddress;
+const compoundCEthContractAddress = ADDRESSES.cEthAddress;
 const compoundCEthContractAbi = require('./contracts/contracts.json').cEthAbi;
 const compoundCEthContract = new web3.eth.Contract(compoundCEthContractAbi, compoundCEthContractAddress);
 
 
 export async function supplyEth(amountToSupply) {
+    console.log(`\nCalling CompoundSupply with ${amountToSupply} ERC for supply...\n`);
     if (!amountToSupply) {
+        console.log("Invalid parameter(s)");
         return;
     }
 

@@ -94,11 +94,12 @@ class Market extends React.Component {
             totalErc20Borrow: myContractCTokenBalance,
         })
 
-        console.log(`My Wallet's   ${assetName} Balance:`, myWalletUnderlyingBalance);
+/*        console.log(`My Wallet's   ${assetName} Balance:`, myWalletUnderlyingBalance);
         console.log(`RepayContract's  ETH Balance:`, myContractEthBalance);
         console.log(`RepayContract's cETH Balance:`, myContractCEthBalance);
         console.log(`RepayContract's  ${assetName} Balance:`, myContractUnderlyingBalance);
         console.log(`RepayContract's c${assetName} Balance:`, myContractCTokenBalance);
+*/
     }
 
     render() {

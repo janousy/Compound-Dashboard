@@ -41,7 +41,7 @@ class BorrowButton extends React.Component {
             } else {
                 console.log("invalid currency");
             }
-            console.log(JSON.stringify(transaction));
+            //console.log(JSON.stringify(transaction));
             this.setState({
                 showFunctionLoading: false,
                 showAlertSuccess: true,

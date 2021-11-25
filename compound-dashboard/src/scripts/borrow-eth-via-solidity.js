@@ -64,6 +64,7 @@ const logBalances = () => {
 
 export async function borrowETH(numETHToBorrow, underlyingAsCollateral) {
     if (!numETHToBorrow || !underlyingAsCollateral) {
+        console.log("Invalid parameter(s)")
         return;
     }
 

@@ -21,7 +21,9 @@ const underlyingDecimals = 18;
 
 
 export async function supplyErc20(amountToSupply) {
+    console.log(`\nCalling CompoundSupply with ${amountToSupply} ERC for supply...\n`);
     if (!amountToSupply) {
+        console.log("Invalid parameter(s)")
         return;
     }
 

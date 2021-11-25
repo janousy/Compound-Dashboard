@@ -57,6 +57,7 @@ const logBalances = () => {
 
 export async function repayErc20(underlyingToRepayBorrow) {
     if (!underlyingToRepayBorrow) {
+        console.log("Invalid parameter(s)");
         return;
     }
 
