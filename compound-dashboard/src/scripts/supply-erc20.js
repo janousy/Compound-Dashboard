@@ -1,48 +1,56 @@
-import {ADDRESSES} from "../const/addresses";
+import { getWeb3Instance } from "./utils";
+import { ADDRESSES } from "../const/addresses";
+import { abi as supplyContractAbi } from "./contracts/CompoundSupply";
 
-const Web3 = require('web3');
-const web3 = new Web3('http://localhost:8545');
+const logBalances = (web3, myWalletAddress, underlying, underlyingDecimals) => {
+    return new Promise(async (resolve, reject) => {
+        // TODO do not need eth but dai balance
+        let myWalletEthBalance = +web3.utils.fromWei(await web3.eth.getBalance(myWalletAddress));
+        let myContractUnderlyingBalance = +await underlying.methods.balanceOf(ADDRESSES.supplyContractAddress).call() / Math.pow(10, underlyingDecimals);
+        let myContractCUnderlyingBalance = +await underlying.methods.balanceOf(ADDRESSES.supplyContractAddress).call() / Math.pow(10, underlyingDecimals);
 
-// `myContractAddress` is logged when running the deploy script in the root
-// directory of the project. Run the deploy script prior to running this one.
-const supplyContractAddress = ADDRESSES.supplyContractAddress;
-const supplyAbi = require('./contracts/CompoundSupply').abi;
-const supplyContract = new web3.eth.Contract(supplyAbi, supplyContractAddress);
 
-// Mainnet address for a cToken (like cDai, https://compound.finance/docs#networks)
-const cTokenAddress = ADDRESSES.cTokenAddress;
-const CErc20Abi = require('./contracts/contracts.json').cErcAbi;
-const cTokenContract = new web3.eth.Contract(CErc20Abi, cTokenAddress);
+        const assetName = 'DAI'; // for the log output lines
 
-const underlyingAddress = ADDRESSES.underlyingAddress;
-const Erc20Abi = require('./contracts/contracts.json').erc20Abi;
-const underlyingContract = new web3.eth.Contract(Erc20Abi, underlyingAddress);
-const underlyingDecimals = 18;
+        console.log("My Wallet's   ETH Balance:", myWalletEthBalance);
+        console.log("MyContract's  ETH Balance:", myContractEthBalance);
+        console.log(`MyContract's  ${assetName} Balance:`, myContractUnderlyingBalance);
 
+        resolve();
+    });
+};
 
 export async function supplyErc20(amountToSupply) {
-    console.log(`\nCalling CompoundSupply with ${amountToSupply} ERC for supply...\n`);
+    console.log(`\nCalling CompoundSupply with ${amountToSupply} ERC20 for supply...\n`);
+
     if (!amountToSupply) {
-        console.log("Invalid parameter(s)")
+        console.log("Invalid parameter(s)");
         return;
     }
 
-    const Web3 = require('web3');
-    const web3 = new Web3('http://localhost:8545');
+    const {
+        erc20Abi,
+    } = require('./contracts/contracts.json');
+
+    const web3 = getWeb3Instance();
+    const supplyContract = new web3.eth.Contract(supplyContractAbi, ADDRESSES.supplyContractAddress);
+    const underlying = new web3.eth.Contract(erc20Abi, ADDRESSES.underlyingAddress);
+
+    const contractIsDeployed = (await web3.eth.getCode(ADDRESSES.supplyContractAddress)) !== '0x';
+    if (!contractIsDeployed) {
+        throw Error('SupplyContract is not deployed! Deploy it by running the deploy script.');
+    }
 
     const { ethereum } = window;
     await ethereum.request({ method: 'eth_requestAccounts' });
     let myWalletAddress = await ethereum.request({method: 'eth_accounts'});
     myWalletAddress = myWalletAddress[0];
 
-    const contractIsDeployed = (await web3.eth.getCode(supplyContractAddress)) !== '0x';
+    const underlyingDecimals = 18; // Number of decimals defined in this ERC20 token's contract
+    await logBalances(web3, myWalletAddress, underlying, underlyingDecimals);
 
-    if (!contractIsDeployed) {
-        throw Error('SupplyContract is not deployed! Deploy it by running the deploy script.');
-    }
-
-    let transferResult = await underlyingContract.methods.transfer(
-        supplyContractAddress,
+    let transferResult = await underlying.methods.transfer(
+        ADDRESSES.supplyContractAddress,
         web3.utils.toHex(amountToSupply * Math.pow(10, underlyingDecimals))
     ).send({
         from: myWalletAddress,
@@ -52,8 +60,8 @@ export async function supplyErc20(amountToSupply) {
 
     // Mint some cERC20 by sending ERC20 to the Compound Protocol
     let result = await supplyContract.methods.supplyErc20ToCompound(
-        underlyingAddress,
-        cTokenAddress,
+        ADDRESSES.underlyingAddress,
+        ADDRESSES.cTokenAddress,
         web3.utils.toHex(amountToSupply * Math.pow(10, underlyingDecimals))
     ).send({
         from: myWalletAddress,
@@ -61,16 +69,16 @@ export async function supplyErc20(amountToSupply) {
         gasPrice: web3.utils.toHex(20000000000)
     });
 
-    console.log('Supplied ERC20 to Compound via Supply Contract');
+    await logBalances(web3, myWalletAddress, underlying, underlyingDecimals);
 
     return result;
 }
 
 supplyErc20().catch(async (err) => {
     console.error('Error: ', err);
+    const web3 = getWeb3Instance();
+    const supplyContract = new web3.eth.Contract(supplyContractAbi, ADDRESSES.supplyContractAddress);
     const logs = await supplyContract.getPastEvents('allEvents');
-    console.error('Logs: ', logs);
+    //console.log('Logs: ', logs);
     return err;
 });
-
-export default supplyErc20();
