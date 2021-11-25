@@ -1,6 +1,3 @@
-// Example to borrow DAI (or any ERC20 token) using ETH as collateral
-// from a Solidity smart contract
-
 import {getWeb3Instance} from "./utils";
 import {ADDRESSES} from "../const/addresses";
 import {abi as borrowContractAbi} from "./contracts/CompoundBorrow.json";
@@ -71,8 +68,6 @@ export async function borrowErc20(numUnderlyingToBorrow, ethToSupplyAsCollateral
         value: (ethToSupplyAsCollateral * 1e18).toString()
     });
 
-    // See the solidity functions logs from "MyLog" event
-    // console.log(result.events.MyLog);
     await logBalances(web3, myWalletAddress, cEth, underlying, underlyingDecimals);
 
     return result;
@@ -80,10 +75,9 @@ export async function borrowErc20(numUnderlyingToBorrow, ethToSupplyAsCollateral
 
 borrowErc20().catch(async (err) => {
     console.error('ERROR:', err);
-    // Create "events" and "emit" them in your Solidity code.
-    // Current contract does not have any.
     const web3 = getWeb3Instance();
     const borrowContract = new web3.eth.Contract(borrowContractAbi, ADDRESSES.borrowContractAddress);
     let logs = await borrowContract.getPastEvents('allEvents');
     //console.log('Logs: ', logs);
+    return err;
 });

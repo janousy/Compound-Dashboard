@@ -1,4 +1,4 @@
 export const CONSTANTS = {
     assets: ['UZHETH', 'ERC20'],
-    errorTiming: 7000,
+    errorTiming: 15000,
 };

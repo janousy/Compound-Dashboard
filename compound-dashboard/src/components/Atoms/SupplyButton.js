@@ -65,7 +65,7 @@ class SupplyButton extends React.Component {
                     </Button>
                     <Spinner hidden={!this.state.showSupplyLoading} animation="border" role="status"/>
                     <Alert hidden={!this.state.showSupplySuccess} variant='success'>
-                        <p>Successfully repaid!</p>
+                        <p>Successfully supplied!</p>
                     </Alert>
                     <Alert hidden={!this.state.showSupplyError} variant='danger'>
                         <p>Transaction failed!</p>
