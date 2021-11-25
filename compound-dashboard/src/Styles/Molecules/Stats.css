@@ -1,0 +1,27 @@
+
+.StatsComponent {
+    max-width: 650px;
+    min-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.BoxContainerUser {
+    border-radius: 15px;
+    width: 100%;
+    background: #ffffff;
+    box-shadow: rgba(0, 0, 0, 0.01) 0px 0px 1px, rgba(0 0 0 0.04) 0px 4px 8px, rgba(0 0 0 0.04) 0px 16px 24px, rgba(0 0 0 0.01) 0px 24px 32px;
+}
+
+.ButtonStats {
+    position: absolute;
+    top: 20px;
+    right: 5px;
+    width: 50px;
+}
+.Title {
+    font-size: 35px;
+    font-weight: bold;
+}
+
+
