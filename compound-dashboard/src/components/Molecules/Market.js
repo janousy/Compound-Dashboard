@@ -1,25 +1,23 @@
 import React from "react";
-import {Tabs, Tab, Row, Col, Button} from "react-bootstrap";
+import { Tabs, Tab, Row, Col, Button } from "react-bootstrap";
 import '../../Styles/Molecules/Stats.css';
-import {cErcAbi, cEthAbi, erc20Abi} from "../../scripts/contracts/contracts.json";
-import {ImSpinner11} from "react-icons/im";
-import {getBorrowMarketStats, getExchangeRates, getSupplyMarketStats} from "../../scripts/utils";
+import { cErcAbi, cEthAbi, erc20Abi } from "../../scripts/contracts/contracts.json";
+import { ImSpinner11 } from "react-icons/im";
+import { getBorrowMarketStats, getCollateralFactors, getExchangeRates, getSupplyMarketStats } from "../../scripts/utils";
+import { ADDRESSES } from "../../const/addresses";
 
 class Market extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            borrowEth: 0,
-            borrowCeth: 0,
-            borrowErc20: 0,
-            borrowCerc20: 0,
-            supplyEth: 0,
-            supplyCeth: 0,
-            supplyErc20: 0,
-            supplyCerc20: 0,
-            exchangeRateEth: 0,
-            exchangeRateErc20: 0
-        };
+            cEthSupply: 0,
+            cTokenSupply: 0,
+            cEthBorrows: 0,
+            cTokenBorrows: 0,
+            cEthExchangeRate: 0,
+            cErc20ExchangeRate: 0,
+            cEtherCollateralFactor: 0,
+        }
     }
 
     componentDidMount() {
@@ -30,23 +28,25 @@ class Market extends React.Component {
             cEthAbi,
             cErcAbi,
             erc20Abi,
+            comptrollerAbi,
         } = require("../../scripts/contracts/contracts.json");
 
         let resultBorrow = await getBorrowMarketStats(cEthAbi, cErcAbi, erc20Abi);
         let resultSupply = await getSupplyMarketStats(cEthAbi, cErcAbi, erc20Abi);
         let exchangeRates = await getExchangeRates(cEthAbi, cErcAbi, erc20Abi);
 
+        let cEtherCollateralFactor = await getCollateralFactors(comptrollerAbi, ADDRESSES.cEthAddress, 18);
+        let cErc20CollateralFactor = await getCollateralFactors(comptrollerAbi, ADDRESSES.cTokenAddress, 18);
+
         this.setState((state) => ({
-            borrowEth: resultBorrow.myContractEthBalance,
-            borrowCeth: resultBorrow.myContractCEthBalance,
-            borrowErc20: resultBorrow.myContractUnderlyingBalance,
-            borrowCerc20: resultBorrow.myContractCTokenBalance,
-            supplyEth: resultSupply.myContractEthBalance,
-            supplyCeth: resultSupply.myContractCEthBalance,
-            supplyErc20: resultSupply.myContractUnderlyingBalance,
-            supplyCerc20: resultSupply.myContractCTokenBalance,
-            exchangeRateEth: exchangeRates.cEthExchangeRate,
-            exchangeRateErc20: exchangeRates.erc20ExchangeRate
+            cEthSupply: resultSupply.cEthSupply,
+            cTokenSupply: resultSupply.cTokenSupply,
+            cEthBorrows: resultBorrow.cEthBorrows,
+            cTokenBorrows: resultBorrow.cTokenBorrows,
+            cEthExchangeRate: exchangeRates.cEthExchangeRate,
+            cErc20ExchangeRate: exchangeRates.erc20ExchangeRate,
+            cEtherCollateralFactor: cEtherCollateralFactor,
+            cErc20CollateralFactor: cErc20CollateralFactor
         }));
     }
 
@@ -56,7 +56,7 @@ class Market extends React.Component {
                 <Row className="position-relative">
                     <div className="Title mb-4 p-0">Markets</div>
                     <Button className="ButtonStats" variant="primary" onClick={this.handleRefreshMarkets.bind(this)}>
-                        <ImSpinner11/>
+                        <ImSpinner11 />
                     </Button>
                 </Row>
                 <Row>
@@ -66,58 +66,66 @@ class Market extends React.Component {
                                 <Row className="pb-3">
                                     <Col className="ps-4">
                                         <div>
-                                            Total Supply
+                                            <h6>Total Borrow</h6>
                                         </div>
                                         <div>
-                                            {this.state.supplyEth} UZHETH
-                                        </div>
-                                        <div>
-                                            {this.state.supplyCeth} cUZHETH
-                                        </div>
-                                        <div>
-                                            ExchangeRate cETH to ETH: {this.state.exchangeRateEth}
+                                            {this.state.cEthSupply} cUZHETH
                                         </div>
                                     </Col>
                                     <Col>
                                         <div>
-                                            Total Borrow
+                                            <h6>Total Borrow</h6>
                                         </div>
                                         <div>
-                                            {this.state.borrowEth} UZHETH
-                                        </div>
-                                        <div>
-                                            {this.state.borrowCeth} cUZHETH
+                                            {this.state.cEthBorrows} cUZHETH
                                         </div>
                                     </Col>
+                                    <hr
+                                        style={{
+                                            color: "black",
+                                            backgroundColor: "black",
+                                            height: 1
+                                        }}
+                                    />
+                                    <div>
+                                        ExchangeRate cETH to ETH: {this.state.cEthExchangeRate}
+                                    </div>
+                                    <div>
+                                        CollateralFactor: {this.state.cEtherCollateralFactor}
+                                    </div>
                                 </Row>
                             </Tab>
                             <Tab eventKey="erc20" title="ERC20">
                                 <Row className="pb-3">
                                     <Col className="ps-4">
                                         <div>
-                                            Total Supply
+                                            <h6>Total Supply</h6>
                                         </div>
                                         <div>
-                                            {this.state.supplyErc20} ERC20
-                                        </div>
-                                        <div>
-                                            {this.state.supplyCerc20} CERC20
-                                        </div>
-                                        <div>
-                                            ExchangeRate Mantissa: {this.state.exchangeRateErc20}
+                                            {this.state.cTokenSupply} cERC20
                                         </div>
                                     </Col>
                                     <Col>
                                         <div>
-                                            Total Borrow
+                                            <h6>Total Borrow</h6>
                                         </div>
                                         <div>
-                                            {this.state.borrowErc20} ERC20
-                                        </div>
-                                        <div>
-                                            {this.state.borrowCerc20} cERC20
+                                            {this.state.cTokenBorrows} cERC20
                                         </div>
                                     </Col>
+                                    <hr
+                                        style={{
+                                            color: "black",
+                                            backgroundColor: "black",
+                                            height: 1
+                                        }}
+                                    />
+                                    <div>
+                                        ExchangeRate cErc20 to Erc20: {this.state.cErc20ExchangeRate}
+                                    </div>
+                                    <div>
+                                        CollateralFactor: {this.state.cErc20CollateralFactor}
+                                    </div>
                                 </Row>
                             </Tab>
                         </Tabs>

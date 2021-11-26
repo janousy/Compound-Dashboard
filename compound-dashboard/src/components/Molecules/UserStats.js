@@ -35,7 +35,7 @@ class UserStats extends React.Component {
             ethBalance: userStats.ethBalance,
             cEthBalance: userStats.cEthBalance,
             erc20Balance: userStats.erc20Balance,
-            cErcBalance: userStats.cErc20Balance,
+            cErc20Balance: userStats.cErc20Balance,
         }));
     }
 

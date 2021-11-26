@@ -1,10 +1,10 @@
 // Example to supply DAI as collateral and borrow ETH
 // YOU MUST HAVE DAI IN YOUR WALLET before you run this script
 
-import {ADDRESSES, ERC20} from "../const/addresses";
-import {getWalletAddress, getWeb3Instance, logBalancesBorrow} from "./utils";
-import {cErcAbi, cEthAbi, erc20Abi} from "./contracts/contracts.json";
-import {abi as borrowContractAbi} from "./contracts/CompoundBorrow.json";
+import { ADDRESSES, ERC20 } from "../const/addresses";
+import { getWalletAddress, getWeb3Instance, logBalancesBorrow } from "./utils";
+import { cErcAbi, cEthAbi, erc20Abi } from "./contracts/contracts.json";
+import { abi as borrowContractAbi } from "./contracts/CompoundBorrow.json";
 
 export async function repayETH(ethToRepayBorrow) {
     if (!ethToRepayBorrow) {
@@ -25,10 +25,6 @@ export async function repayETH(ethToRepayBorrow) {
     const borrowContract = new web3.eth.Contract(borrowContractAbi, ADDRESSES.borrowContractAddress);
 
     console.log(`\nCalling CompoundBorrow with ${ethToRepayBorrow} ETH for repay...\n`);
-    const contractIsDeployed = (await web3.eth.getCode(ADDRESSES.borrowContractAddress)) !== '0x';
-    if (!contractIsDeployed) {
-        throw Error('CompoundBorrow contract is not deployed! Deploy it by running the deploy script.');
-    }
 
     const myWalletAddress = await getWalletAddress();
 
@@ -40,12 +36,29 @@ export async function repayETH(ethToRepayBorrow) {
 
     await logBalancesBorrow(web3, myWalletAddress, cEth, cToken, underlying, ERC20.name, ERC20.decimals);
 
-    //const ethToRepayBorrow = 0.002; // hard coded borrow in contract
-    let result = await borrowContract.methods.myEthRepayBorrow(
-        ADDRESSES.cEthAddress,
-        web3.utils.toWei(ethToRepayBorrow.toString(), 'ether'),
-        300000 // gas for the "cEth.repayBorrow" function
-    ).send(fromMyWallet);
+    console.log(`Now repaying the borrow...`);
+
+    const result = await cEth.methods.repayBorrow().send({
+        from: myWalletAddress,
+        gasLimit: web3.utils.toHex(600000),
+        gasPrice: web3.utils.toHex(20000000000), // use ethgasstation.info (mainnet only)
+        value: web3.utils.toWei(ethToRepayBorrow.toString(), 'ether')
+    });
+
+    if (result.events && result.events.Failure) {
+        const errorCode = result.events.Failure.returnValues.error;
+        console.error(`repayBorrow error, code ${errorCode}`);
+        process.exit(1);
+    }
+
+    console.log(`\nBorrow repaid.\n`);
+
+    /*     //const ethToRepayBorrow = 0.002; // hard coded borrow in contract
+        let result = await borrowContract.methods.myEthRepayBorrow(
+            ADDRESSES.cEthAddress,
+            web3.utils.toWei(ethToRepayBorrow.toString(), 'ether'),
+            300000 // gas for the "cEth.repayBorrow" function
+        ).send(fromMyWallet); */
 
     await logBalancesBorrow(web3, myWalletAddress, cEth, cToken, underlying, ERC20.name, ERC20.decimals);
     return result;

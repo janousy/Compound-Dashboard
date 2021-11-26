@@ -47,7 +47,7 @@ const main = async function() {
 
   console.log('Supplied ETH to Compound via MyContract');
   // Uncomment this to see the solidity logs
-  // console.log(supplyResult.events.MyLog);
+  console.log(supplyResult.events.MyLog);
 
   let balanceOfUnderlying = await compoundCEthContract.methods.
     balanceOfUnderlying(supplyContractAddress).call();

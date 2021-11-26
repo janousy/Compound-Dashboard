@@ -57,8 +57,8 @@ class RedeemButton extends React.Component {
                         className="Form mt-2 text-center"
                         value={this.state.amount}/>
                     <DropdownButton onSelect={this.setCurrency} className="mt-2" title={`Currency: ${this.state.currency}`}>
-                        <Dropdown.Item eventKey="UZHETH">UZHETH</Dropdown.Item>
-                        <Dropdown.Item eventKey="ERC20">ERC20</Dropdown.Item>
+                        <Dropdown.Item eventKey="UZHETH">cUZHETH</Dropdown.Item>
+                        <Dropdown.Item eventKey="ERC20">cERC20</Dropdown.Item>
                     </DropdownButton>
                     <Button
                         disabled={this.state.amount <= 0}

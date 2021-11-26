@@ -1,4 +1,4 @@
-import {ADDRESSES} from "../const/addresses";
+import { ADDRESSES } from "../const/addresses";
 
 export function getWeb3Instance() {
     const Web3 = require('web3');
@@ -28,7 +28,7 @@ export async function logBalancesBorrow(web3, myWalletAddress, cEth, cToken, und
 export async function getWalletAddress() {
     const { ethereum } = window;
     await ethereum.request({ method: 'eth_requestAccounts' });
-    let myWalletAddress = await ethereum.request({method: 'eth_accounts'});
+    let myWalletAddress = await ethereum.request({ method: 'eth_accounts' });
     myWalletAddress = myWalletAddress[0];
     return myWalletAddress;
 }
@@ -49,7 +49,11 @@ export async function getBorrowMarketStats(cEthAbi, cErcAbi, erc20Abi) {
     const myContractUnderlyingBalance = +await underlying.methods.balanceOf(ADDRESSES.borrowContractAddress).call() / 1e18;
     const myContractCTokenBalance = +await cToken.methods.balanceOf(ADDRESSES.borrowContractAddress).call() / 1e8;
 
-    return {myContractEthBalance, myContractCEthBalance, myContractUnderlyingBalance, myContractCTokenBalance};
+    const cEthBorrows = (await cEth.methods.totalBorrowsCurrent().call());
+    const cTokenBorrows = (await cToken.methods.totalBorrowsCurrent().call());
+
+    return { cEthBorrows, cTokenBorrows };
+    //return {myContractEthBalance, myContractCEthBalance, myContractUnderlyingBalance, myContractCTokenBalance};
 }
 
 export async function getSupplyMarketStats(cEthAbi, cErcAbi, erc20Abi) {
@@ -68,7 +72,11 @@ export async function getSupplyMarketStats(cEthAbi, cErcAbi, erc20Abi) {
     const myContractUnderlyingBalance = +await underlying.methods.balanceOf(ADDRESSES.supplyContractAddress).call() / 1e18;
     const myContractCTokenBalance = +await cToken.methods.balanceOf(ADDRESSES.supplyContractAddress).call() / 1e8;
 
-    return {myContractEthBalance, myContractCEthBalance, myContractUnderlyingBalance, myContractCTokenBalance};
+    const cEthSupply = (await cEth.methods.totalSupply().call());
+    const cTokenSupply = (await cToken.methods.totalSupply().call());
+
+    return { cEthSupply, cTokenSupply }
+    //return {myContractEthBalance, myContractCEthBalance, myContractUnderlyingBalance, myContractCTokenBalance};
 }
 
 export async function getUserStats(cEthAbi, cErcAbi, erc20Abi) {
@@ -81,14 +89,15 @@ export async function getUserStats(cEthAbi, cErcAbi, erc20Abi) {
     const cToken = new web3.eth.Contract(cErcAbi, ADDRESSES.cTokenAddress);
 
     let ethBalance = +web3.utils.fromWei(await web3.eth.getBalance(myWalletAddress));
-    let cEthBalance = await cEth.methods.balanceOf(myWalletAddress).call() / 1e8;
+    let cEthBalance = +await cEth.methods.balanceOf(myWalletAddress).call() / 1e8;
     let erc20Balance = +await underlying.methods.balanceOf(myWalletAddress).call() / 1e18;
-    let cErc20Balance = +await cToken.methods.balanceOf(myWalletAddress).call() / 1e18;
+    let cErc20Balance = +await cToken.methods.balanceOf(myWalletAddress).call() / 1e8;
 
-    return {ethBalance, cEthBalance, erc20Balance, cErc20Balance};
+    return { ethBalance, cEthBalance, erc20Balance, cErc20Balance };
 }
 
 export async function getExchangeRates(cEthAbi, cErcAbi, erc20Abi) {
+
     const ethDecimals = 2;
 
     const web3 = getWeb3Instance();
@@ -101,7 +110,17 @@ export async function getExchangeRates(cEthAbi, cErcAbi, erc20Abi) {
     cEthExchangeRate = cEthExchangeRate / Math.pow(10, 18 + ethDecimals - 8);
 
     // Erc20 ExchangeRateMantissa
-    let erc20ExchangeRate = await cToken.methods.exchangeRateCurrent().call();
+    let erc20ExchangeRate = await cToken.methods.exchangeRateCurrent().call() / 1e18;
 
-    return {cEthExchangeRate, erc20ExchangeRate};
+    return { cEthExchangeRate, erc20ExchangeRate };
+}
+
+export async function getCollateralFactors(comptrollerAbi, market, decimals) {
+
+    const web3 = getWeb3Instance();
+
+    const comptroller = new web3.eth.Contract(comptrollerAbi, ADDRESSES.comptrollerAddress);
+    const result = await comptroller.methods.markets(market).call();
+    const { 0: isListed, 1: collateralFactorMantissa, 2: isComped } = result;
+    return collateralFactorMantissa / Math.pow(10, decimals);
 }
