@@ -4,7 +4,7 @@ import { ADDRESSES, ERC20 } from "../const/addresses";
 import { abi as borrowContractAbi } from "./contracts/CompoundBorrow.json";
 
 export async function repayErc20(underlyingToRepayBorrow) {
-    console.log(`Now repaying the borrow...`);
+    console.log(`Calling repayErc20 with ${underlyingToRepayBorrow} Erc20..`);
 
     const assetName = ERC20.name;
     const underlyingDecimals = ERC20.decimals;
@@ -27,20 +27,12 @@ export async function repayErc20(underlyingToRepayBorrow) {
     const borrowContractAbi = require('./contracts/CompoundBorrow.json').abi;
     const borrowContract = new web3.eth.Contract(borrowContractAbi, ADDRESSES.borrowContractAddress);
 
-    //console.log(`\nCalling CompoundBorrow with ${underlyingToRepayBorrow} Erc20 for repay...\n`);
-/*     const contractIsDeployed = (await web3.eth.getCode(ADDRESSES.borrowContractAddress)) !== '0x';
-    if (!contractIsDeployed) {
-        throw Error('Compound BorrowContract is not deployed! Deploy it by running the deploy script.');
-    } */
-
     const myWalletAddress = await getWalletAddress();
     const fromMyWallet = {
         from: myWalletAddress,
         gasLimit: web3.utils.toHex(4000000),
         gasPrice: web3.utils.toHex(25000000000) // use ethgasstation.info (mainnet only)
     };
-
-    await logBalancesBorrow(web3, myWalletAddress, cEth, cToken, underlying, ERC20.name, ERC20.decimals);
 
     console.log(`Approving ${assetName} to be transferred from your wallet to the c${assetName} contract...`);
     const underlyingToRepay = (underlyingToRepayBorrow * Math.pow(10, underlyingDecimals)).toString();
@@ -56,18 +48,6 @@ export async function repayErc20(underlyingToRepayBorrow) {
 
     console.log(`\nBorrow repaid.\n`);
 
-    //const underlyingToRepayBorrow = 10;
-    /*     let result = await borrowContract.methods.myErc20RepayBorrow(
-            ADDRESSES.underlyingAddress,
-            ADDRESSES.cTokenAddress,
-            (underlyingToRepayBorrow * Math.pow(10, ERC20.decimals)).toString()
-        ).send({
-            from: myWalletAddress,
-            gasLimit: web3.utils.toHex(5000000),
-            gasPrice: web3.utils.toHex(20000000000), // use ethgasstation.info (mainnet only)
-        }); */
-
-    await logBalancesBorrow(web3, myWalletAddress, cEth, cToken, underlying, ERC20.name, ERC20.decimals);
     return repayBorrow;
 };
 

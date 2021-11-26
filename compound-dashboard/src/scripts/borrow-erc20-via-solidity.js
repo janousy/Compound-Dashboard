@@ -6,7 +6,10 @@ import { ADDRESSES, ERC20 } from "../const/addresses";
 import { abi as borrowContractAbi } from "./contracts/CompoundBorrow.json";
 
 export async function borrowErc20(numUnderlyingToBorrow, ethToSupplyAsCollateral) {
-    console.log(`\nCalling CompoundBorrow with ${ethToSupplyAsCollateral} ETH for collateral...\n`);
+    if(!numUnderlyingToBorrow || ethToSupplyAsCollateral) {
+        return;
+    }
+    console.log(`\nCalling borrowErc20 with ${ethToSupplyAsCollateral} ETH for collateral...\n`);
 
     const assetName = ERC20.name;
     const underlyingDecimals = ERC20.decimals;
@@ -35,15 +38,12 @@ export async function borrowErc20(numUnderlyingToBorrow, ethToSupplyAsCollateral
         gasPrice: web3.utils.toHex(25000000000) // use ethgasstation.info (mainnet only)
     };
 
-    //const ethToSupplyAsCollateral = 1;
     console.log('\nSupplying ETH to the protocol as collateral (you will get cETH in return)...\n');
     let mint = await cEth.methods.mint().send({
         from: myWalletAddress,
         gasLimit: web3.utils.toHex(175000),
         value: web3.utils.toHex(ethToSupplyAsCollateral * 1e18)
     });
-
-    //await logBalances();
 
     console.log('\nEntering market (via Comptroller contract) for ETH (as collateral)...');
     let markets = [ADDRESSES.cEthAddress]; // This is the cToken contract(s) for your collateral
@@ -76,47 +76,13 @@ export async function borrowErc20(numUnderlyingToBorrow, ethToSupplyAsCollateral
     console.log(`Now attempting to borrow ${numUnderlyingToBorrow} ${assetName}...`);
     const scaledUpBorrowAmount = (numUnderlyingToBorrow * Math.pow(10, underlyingDecimals)).toString();
     const result = await cToken.methods.borrow(scaledUpBorrowAmount).send(fromMyWallet);
-    // console.log('Borrow Transaction', trx);
-
-    //await logBalances();
 
     console.log(`\nFetching ${assetName} borrow balance from c${assetName} contract...`);
     let balance = await cToken.methods.borrowBalanceCurrent(myWalletAddress).call();
     balance = balance / Math.pow(10, underlyingDecimals);
     console.log(`Borrow balance is ${balance} ${assetName}`);
 
-    await logBalancesBorrow(web3, myWalletAddress, cEth, cToken, underlying, ERC20.name, ERC20.decimals);
-
     return result;
-
-    /*  const contractIsDeployed = (await web3.eth.getCode(ADDRESSES.borrowContractAddress)) !== '0x';
-     if (!contractIsDeployed) {
-         throw Error('Compound BorrowContract is not deployed! Deploy it by running the deploy script.');
-     }
- 
-     const myWalletAddress = await getWalletAddress();
- 
-     await logBalancesBorrow(web3, myWalletAddress, cEth, cToken, underlying, ERC20.name, ERC20.decimals);
-     console.log(`\nSending ${ethToSupplyAsCollateral} ETH or ${ethToSupplyAsCollateral * 1e18} WEI to BorrowContract so it can provide collateral...\n`);
-     console.log(`\nBorrowing ${numUnderlyingToBorrow} ${ERC20.name}...\n`); */
-
-    /*     let result = await borrowContract.methods.borrowErc20Example(
-            ADDRESSES.cEthAddress,
-            ADDRESSES.comptrollerAddress,
-            ADDRESSES.priceFeedAddress,
-            ADDRESSES.cTokenAddress,
-            ERC20.decimals,
-            numUnderlyingToBorrow
-        ).send({
-            from: myWalletAddress,
-            gasLimit: web3.utils.toHex(5000000),
-            gasPrice: web3.utils.toHex(20000000000), // use ethgasstation.info (mainnet only)
-            value: (ethToSupplyAsCollateral * 1e18).toString()
-        }); */
-
-    // See the solidity functions logs from "MyLog" event
-    // console.log(result.events.MyLog);
-
 };
 
 borrowErc20().catch(async (err) => {

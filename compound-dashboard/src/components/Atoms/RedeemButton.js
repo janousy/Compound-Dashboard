@@ -10,7 +10,7 @@ class RedeemButton extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            currency: CONSTANTS.assets[0],
+            currency: CONSTANTS.cAssets[0],
             amount: 0,
             showRedeemSuccess: false,
             showRedeemError: false,
@@ -27,10 +27,10 @@ class RedeemButton extends React.Component {
         this.setState({showRedeemLoading: true});
         let transaction = {};
         try {
-            if (this.state.currency === CONSTANTS.assets[0]) {
+            if (this.state.currency === CONSTANTS.cAssets[0]) {
                 transaction = await redeemEth(parseInt(this.state.amount, 10));
             }
-            else if (this.state.currency === CONSTANTS.assets[1]) {
+            else if (this.state.currency === CONSTANTS.cAssets[1]) {
                 transaction = await redeemErc20(parseInt(this.state.amount, 10));
             }
             this.setState({showRedeemLoading: false, showRedeemSuccess: true, transaction: transaction, amount: 0,});
@@ -57,8 +57,8 @@ class RedeemButton extends React.Component {
                         className="Form mt-2 text-center"
                         value={this.state.amount}/>
                     <DropdownButton onSelect={this.setCurrency} className="mt-2" title={`Currency: ${this.state.currency}`}>
-                        <Dropdown.Item eventKey="UZHETH">cUZHETH</Dropdown.Item>
-                        <Dropdown.Item eventKey="ERC20">cERC20</Dropdown.Item>
+                        <Dropdown.Item eventKey="cUZHETH">cUZHETH</Dropdown.Item>
+                        <Dropdown.Item eventKey="cERC20">cERC20</Dropdown.Item>
                     </DropdownButton>
                     <Button
                         disabled={this.state.amount <= 0}

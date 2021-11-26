@@ -19,7 +19,7 @@ const logBalances = (web3, myWalletAddress, cEth) => {
 };
 
 export async function redeemEth(amountToRedeem) {
-    console.log(`\nCalling CompoundSupply with ${amountToRedeem} ETH for redeem...\n`);
+    console.log(`\nCalling redeemEth with ${amountToRedeem} ETH for redeem...\n`);
 
     if (!amountToRedeem) {
         console.log("Invalid parameter(s)");
@@ -34,14 +34,8 @@ export async function redeemEth(amountToRedeem) {
     //const supplyContract = new web3.eth.Contract(supplyContractAbi, ADDRESSES.supplyContractAddress);
     const cEthContract = new web3.eth.Contract(cEthAbi, ADDRESSES.cEthAddress);
 
-/*     const contractIsDeployed = (await web3.eth.getCode(ADDRESSES.supplyContractAddress)) !== '0x';
-    if (!contractIsDeployed) {
-        throw Error('SupplyContract is not deployed! Deploy it by running the deploy script.');
-    } */
     const myWalletAddress = await getWalletAddress();
     
-    await logBalances(web3, myWalletAddress, cEthContract);
-
     let cTokenBalance = await cEthContract.methods.balanceOf(myWalletAddress).call() / 1e8;
     if (amountToRedeem > cTokenBalance) {
         throw Error('Error! Cannot redeem more than current cToken balance: ', cTokenBalance)
@@ -57,24 +51,6 @@ export async function redeemEth(amountToRedeem) {
     });
 
     console.log('Redeeming successfull...', '\n');
-
-    /*     console.log('Exchanging all cETH based on underlying ETH amount...', '\n');
-        let ethAmount = web3.utils.toWei(balanceOfUnderlying).toString()
-        await cEthContract.methods.redeemUnderlying(ethAmount).send({
-            from: myWalletAddress,
-            gasLimit: web3.utils.toHex(150000),
-            gasPrice: web3.utils.toHex(20000000000), // use ethgasstation.info (mainnet only)
-        }); */
-
-    /*     let result = await supplyContract.methods.redeemCEth(
-            web3.utils.toHex(amountToRedeem),
-            true,
-            ADDRESSES.cEthAddress
-        ).send({
-            from: myWalletAddress,
-            gasLimit: web3.utils.toHex(750000),
-            gasPrice: web3.utils.toHex(20000000000),
-        }); */
 
     await logBalances(web3, myWalletAddress, cEthContract);
 

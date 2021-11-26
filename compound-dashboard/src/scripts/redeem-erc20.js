@@ -18,7 +18,7 @@ const logBalances = (web3, myWalletAddress, cErc20) => {
 };
 
 export async function redeemErc20(amountToRedeem) {
-    console.log(`\nCalling CompoundSupply with ${amountToRedeem} Erc20 for redeem...\n`);
+    console.log(`\nCalling redeemErc20 with ${amountToRedeem} Erc20 for redeem...\n`);
 
     if (!amountToRedeem) {
         console.log("Invalid parameter(s)");
@@ -40,35 +40,16 @@ export async function redeemErc20(amountToRedeem) {
         gasPrice: web3.utils.toHex(20000000000) // use ethgasstation.info (mainnet only)
       };
 
-    /*     const contractIsDeployed = (await web3.eth.getCode(ADDRESSES.supplyContractAddress)) !== '0x';
-        if (!contractIsDeployed) {
-            throw Error('SupplyContract is not deployed! Deploy it by running the deploy script.');
-        } */
-
     let cTokenBalance = await cErc20Contract.methods.balanceOf(myWalletAddress).call() / 1e8;
     if (amountToRedeem > cTokenBalance) {
         throw Error('Error! Cannot redeem more than current cToken balance: ', cTokenBalance)
     }
-
-    await logBalances(web3, myWalletAddress, cErc20Contract);
 
     // redeem (based on cTokens)
     console.log('Redeeming the cErc20 for Erc20...', '\n');
     console.log(`Exchanging all c${ERC20.name} based on cToken amount...`, '\n');
     let result = await cErc20Contract.methods.redeem(amountToRedeem * 1e8).send(fromMyWallet);
     console.log('Redeeming successfull...', '\n');
-
-    /*     let result = await supplyContract.methods.redeemCErc20Tokens(
-            web3.utils.toHex(amountToRedeem),
-            true,
-            ADDRESSES.cTokenAddress
-        ).send({
-            from: myWalletAddress,
-            gasLimit: web3.utils.toHex(500000),
-            gasPrice: web3.utils.toHex(20000000000)
-        }); */
-
-    await logBalances(web3, myWalletAddress, cErc20Contract);
 
     return result;
 }

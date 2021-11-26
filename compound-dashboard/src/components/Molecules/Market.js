@@ -10,13 +10,14 @@ class Market extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            cEthSupply: 0,
-            cTokenSupply: 0,
-            cEthBorrows: 0,
-            cTokenBorrows: 0,
+            EthSupply: 0,
+            TokenSupply: 0,
+            EthBorrows: 0,
+            TokenBorrows: 0,
             cEthExchangeRate: 0,
             cErc20ExchangeRate: 0,
             cEtherCollateralFactor: 0,
+            cErc20CollateralFactor: 0,
         }
     }
 
@@ -31,20 +32,29 @@ class Market extends React.Component {
             comptrollerAbi,
         } = require("../../scripts/contracts/contracts.json");
 
-        let resultBorrow = await getBorrowMarketStats(cEthAbi, cErcAbi, erc20Abi);
-        let resultSupply = await getSupplyMarketStats(cEthAbi, cErcAbi, erc20Abi);
+        let supplyResults = await getSupplyMarketStats(cEthAbi, cErcAbi, erc20Abi);
+        let borrowResults = await getBorrowMarketStats(cEthAbi, cErcAbi, erc20Abi);
         let exchangeRates = await getExchangeRates(cEthAbi, cErcAbi, erc20Abi);
+
+        const cEthExchangeRate = exchangeRates.cEthExchangeRate;
+        const cErc20ExchangeRate = exchangeRates.cErc20ExchangeRate;
+
+        let ethSupply = supplyResults.cEthSupply * cEthExchangeRate;
+        let tokenSupply = supplyResults.cTokenSupply * cErc20ExchangeRate;
+
+        let ethBorrows = borrowResults.cEthBorrows * cEthExchangeRate
+        let tokenBorrows = borrowResults.cTokenBorrows * cErc20ExchangeRate;
 
         let cEtherCollateralFactor = await getCollateralFactors(comptrollerAbi, ADDRESSES.cEthAddress, 18);
         let cErc20CollateralFactor = await getCollateralFactors(comptrollerAbi, ADDRESSES.cTokenAddress, 18);
 
         this.setState((state) => ({
-            cEthSupply: resultSupply.cEthSupply,
-            cTokenSupply: resultSupply.cTokenSupply,
-            cEthBorrows: resultBorrow.cEthBorrows,
-            cTokenBorrows: resultBorrow.cTokenBorrows,
-            cEthExchangeRate: exchangeRates.cEthExchangeRate,
-            cErc20ExchangeRate: exchangeRates.erc20ExchangeRate,
+            EthSupply: ethSupply,
+            TokenSupply: tokenSupply,
+            EthBorrows: ethBorrows,
+            TokenBorrows: tokenBorrows,
+            cEthExchangeRate: cEthExchangeRate,
+            cErc20ExchangeRate: cErc20ExchangeRate,
             cEtherCollateralFactor: cEtherCollateralFactor,
             cErc20CollateralFactor: cErc20CollateralFactor
         }));
@@ -66,10 +76,10 @@ class Market extends React.Component {
                                 <Row className="pb-3">
                                     <Col className="ps-4">
                                         <div>
-                                            <h6>Total Borrow</h6>
+                                            <h6>Total Supply</h6>
                                         </div>
                                         <div>
-                                            {this.state.cEthSupply} cUZHETH
+                                            {this.state.EthSupply} UZHETH
                                         </div>
                                     </Col>
                                     <Col>
@@ -77,7 +87,7 @@ class Market extends React.Component {
                                             <h6>Total Borrow</h6>
                                         </div>
                                         <div>
-                                            {this.state.cEthBorrows} cUZHETH
+                                            {this.state.EthBorrows} UZHETH
                                         </div>
                                     </Col>
                                     <hr
@@ -93,6 +103,9 @@ class Market extends React.Component {
                                     <div>
                                         CollateralFactor: {this.state.cEtherCollateralFactor}
                                     </div>
+                                    <div>
+                                        InterestRate:
+                                    </div>
                                 </Row>
                             </Tab>
                             <Tab eventKey="erc20" title="ERC20">
@@ -102,7 +115,7 @@ class Market extends React.Component {
                                             <h6>Total Supply</h6>
                                         </div>
                                         <div>
-                                            {this.state.cTokenSupply} cERC20
+                                            {this.state.TokenSupply} ERC20
                                         </div>
                                     </Col>
                                     <Col>
@@ -110,7 +123,7 @@ class Market extends React.Component {
                                             <h6>Total Borrow</h6>
                                         </div>
                                         <div>
-                                            {this.state.cTokenBorrows} cERC20
+                                            {this.state.TokenBorrows} ERC20
                                         </div>
                                     </Col>
                                     <hr
@@ -125,6 +138,9 @@ class Market extends React.Component {
                                     </div>
                                     <div>
                                         CollateralFactor: {this.state.cErc20CollateralFactor}
+                                    </div>
+                                    <div>
+                                        InterestRate:
                                     </div>
                                 </Row>
                             </Tab>

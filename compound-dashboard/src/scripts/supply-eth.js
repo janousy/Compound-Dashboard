@@ -17,7 +17,7 @@ const logBalances = (web3, myWalletAddress, cEth) => {
 };
 
 export async function supplyEth(amountToSupply) {
-    console.log(`\nCalling CompoundSupply with ${amountToSupply} ETH for supply...\n`);
+    console.log(`\nCalling supplyEth with ${amountToSupply} ETH for supply...\n`);
 
     if (!amountToSupply) {
         console.log("Invalid parameter(s)");
@@ -32,28 +32,18 @@ export async function supplyEth(amountToSupply) {
     const supplyContract = new web3.eth.Contract(supplyContractAbi, ADDRESSES.supplyContractAddress);
     const cEth = new web3.eth.Contract(cEthAbi, ADDRESSES.cEthAddress);
 
-/*     const contractIsDeployed = (await web3.eth.getCode(ADDRESSES.supplyContractAddress)) !== '0x';
-    if (!contractIsDeployed) {
-        throw Error('SupplyContract is not deployed! Deploy it by running the deploy script.');
-    } */
-
     const { ethereum } = window;
     await ethereum.request({ method: 'eth_requestAccounts' });
     let myWalletAddress = await ethereum.request({ method: 'eth_accounts' });
     myWalletAddress = myWalletAddress[0];
-
-    await logBalances(web3, myWalletAddress, cEth);
-
 
     // Mint some cETH by supplying ETH to the Compound Protocol
     let result = await cEth.methods.mint().send({
         from: myWalletAddress,
         gasLimit: web3.utils.toHex(250000),
         gasPrice: web3.utils.toHex(20000000000), // use ethgasstation.info (mainnet only)
-        value: web3.utils.toHex(web3.utils.toWei('1', 'ether'))
+        value: web3.utils.toHex(web3.utils.toWei(amountToSupply.toString(), 'ether'))
     });
-
-    await logBalances(web3, myWalletAddress, cEth);
 
     return result;
 }

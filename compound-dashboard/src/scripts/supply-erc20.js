@@ -19,7 +19,7 @@ const logBalances = (web3, myWalletAddress, underlying, underlyingDecimals) => {
 };
 
 export async function supplyErc20(amountToSupply) {
-    console.log(`\nCalling CompoundSupply with ${amountToSupply} ERC20 for supply...\n`);
+    console.log(`\nCalling supplyErc20 with ${amountToSupply} ERC20 for supply...\n`);
 
     if (!amountToSupply) {
         console.log("Invalid parameter(s)");
@@ -36,11 +36,6 @@ export async function supplyErc20(amountToSupply) {
     const underlyingContract = new web3.eth.Contract(erc20Abi, ADDRESSES.underlyingAddress);
     const cErc20Contract = new web3.eth.Contract(cErcAbi, ADDRESSES.cTokenAddress);
 
-/*     const contractIsDeployed = (await web3.eth.getCode(ADDRESSES.supplyContractAddress)) !== '0x';
-    if (!contractIsDeployed) {
-        throw Error('SupplyContract is not deployed! Deploy it by running the deploy script.');
-    } */
-
     const myWalletAddress = await getWalletAddress();
     const fromMyWallet = {
         from: myWalletAddress,
@@ -49,7 +44,6 @@ export async function supplyErc20(amountToSupply) {
       };
 
     const underlyingDecimals = 18; // Number of decimals defined in this ERC20 token's contract
-    await logBalances(web3, myWalletAddress, underlyingContract, underlyingDecimals);
 
     const underlyingTokensToSupply = amountToSupply * Math.pow(10, underlyingDecimals);
 
@@ -72,28 +66,6 @@ export async function supplyErc20(amountToSupply) {
         .balanceOfUnderlying(myWalletAddress).call()) / Math.pow(10, underlyingDecimals);
     
     console.log(`${ERC20.name} supplied to the Compound Protocol:`, balanceOfUnderlying, '\n');
-
-/*     let transferResult = await underlying.methods.transfer(
-        ADDRESSES.supplyContractAddress,
-        web3.utils.toHex(amountToSupply * Math.pow(10, underlyingDecimals))
-    ).send({
-        from: myWalletAddress,
-        gasLimit: web3.utils.toHex(500000),
-        gasPrice: web3.utils.toHex(20000000000)
-    });
-
-    // Mint some cERC20 by sending ERC20 to the Compound Protocol
-    let result = await supplyContract.methods.supplyErc20ToCompound(
-        ADDRESSES.underlyingAddress,
-        ADDRESSES.cTokenAddress,
-        web3.utils.toHex(amountToSupply * Math.pow(10, underlyingDecimals))
-    ).send({
-        from: myWalletAddress,
-        gasLimit: web3.utils.toHex(500000),
-        gasPrice: web3.utils.toHex(20000000000)
-    }); */
-
-    await logBalances(web3, myWalletAddress, underlyingContract, underlyingDecimals);
 
     return result;
 }

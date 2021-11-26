@@ -64,22 +64,13 @@ export async function getSupplyMarketStats(cEthAbi, cErcAbi, erc20Abi) {
     const underlying = new web3.eth.Contract(erc20Abi, ADDRESSES.underlyingAddress);
     const cToken = new web3.eth.Contract(cErcAbi, ADDRESSES.cTokenAddress);
 
-    const supplyContractAbi = require('./contracts/CompoundSupply.json').abi;
-    const supplyContract = new web3.eth.Contract(supplyContractAbi, ADDRESSES.supplyContractAddress);
-
-    const myContractEthBalance = +web3.utils.fromWei(await web3.eth.getBalance(ADDRESSES.supplyContractAddress)) * 1e18;
-    const myContractCEthBalance = await cEth.methods.balanceOf(ADDRESSES.supplyContractAddress).call() / 1e8;
-    const myContractUnderlyingBalance = +await underlying.methods.balanceOf(ADDRESSES.supplyContractAddress).call() / 1e18;
-    const myContractCTokenBalance = +await cToken.methods.balanceOf(ADDRESSES.supplyContractAddress).call() / 1e8;
-
     const cEthSupply = (await cEth.methods.totalSupply().call());
     const cTokenSupply = (await cToken.methods.totalSupply().call());
 
     return { cEthSupply, cTokenSupply }
-    //return {myContractEthBalance, myContractCEthBalance, myContractUnderlyingBalance, myContractCTokenBalance};
 }
 
-export async function getUserStats(cEthAbi, cErcAbi, erc20Abi) {
+export async function getUserAssets(cEthAbi, cErcAbi, erc20Abi) {
 
     const web3 = getWeb3Instance();
     const myWalletAddress = await getWalletAddress();
@@ -96,10 +87,23 @@ export async function getUserStats(cEthAbi, cErcAbi, erc20Abi) {
     return { ethBalance, cEthBalance, erc20Balance, cErc20Balance };
 }
 
+export async function getUserBorrows(cEthAbi, cErcAbi, erc20Abi) {
+
+    const web3 = getWeb3Instance();
+    const myWalletAddress = await getWalletAddress();
+
+    const cEth = new web3.eth.Contract(cEthAbi, ADDRESSES.cEthAddress);
+    const cToken = new web3.eth.Contract(cErcAbi, ADDRESSES.cTokenAddress);
+
+    let cEthBorrowBalance = +await cEth.methods.borrowBalanceCurrent(myWalletAddress).call() / 1e8;
+    let cErc20BorrowBalance = +await cToken.methods.borrowBalanceCurrent(myWalletAddress).call() / 1e8;
+
+    console.log(cEthBorrowBalance);
+
+    return {cEthBorrowBalance, cErc20BorrowBalance}
+}
+
 export async function getExchangeRates(cEthAbi, cErcAbi, erc20Abi) {
-
-    const ethDecimals = 2;
-
     const web3 = getWeb3Instance();
 
     const cEthContract = new web3.eth.Contract(cEthAbi, ADDRESSES.cEthAddress);
@@ -107,12 +111,12 @@ export async function getExchangeRates(cEthAbi, cErcAbi, erc20Abi) {
 
     //urrent exchange rate from cETH to ETH
     let cEthExchangeRate = await cEthContract.methods.exchangeRateCurrent().call();
-    cEthExchangeRate = cEthExchangeRate / Math.pow(10, 18 + ethDecimals - 8);
+    cEthExchangeRate = cEthExchangeRate / 1e28;
 
     // Erc20 ExchangeRateMantissa
-    let erc20ExchangeRate = await cToken.methods.exchangeRateCurrent().call() / 1e18;
+    let cErc20ExchangeRate = await cToken.methods.exchangeRateCurrent().call() / 1e28;
 
-    return { cEthExchangeRate, erc20ExchangeRate };
+    return { cEthExchangeRate, cErc20ExchangeRate };
 }
 
 export async function getCollateralFactors(comptrollerAbi, market, decimals) {

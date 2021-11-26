@@ -7,6 +7,7 @@ import { cErcAbi, cEthAbi, erc20Abi } from "./contracts/contracts.json";
 import { abi as borrowContractAbi } from "./contracts/CompoundBorrow.json";
 
 export async function repayETH(ethToRepayBorrow) {
+    console.log(`\nCalling ethToRepayBorrow with ${ethToRepayBorrow} ETH for repay...\n`);
     if (!ethToRepayBorrow) {
         return;
     }
@@ -24,7 +25,6 @@ export async function repayETH(ethToRepayBorrow) {
     const borrowContractAbi = require('./contracts/CompoundBorrow.json').abi;
     const borrowContract = new web3.eth.Contract(borrowContractAbi, ADDRESSES.borrowContractAddress);
 
-    console.log(`\nCalling CompoundBorrow with ${ethToRepayBorrow} ETH for repay...\n`);
 
     const myWalletAddress = await getWalletAddress();
 
@@ -33,8 +33,6 @@ export async function repayETH(ethToRepayBorrow) {
         gasLimit: web3.utils.toHex(4000000),
         gasPrice: web3.utils.toHex(25000000000) // use ethgasstation.info (mainnet only)
     };
-
-    await logBalancesBorrow(web3, myWalletAddress, cEth, cToken, underlying, ERC20.name, ERC20.decimals);
 
     console.log(`Now repaying the borrow...`);
 
@@ -53,14 +51,6 @@ export async function repayETH(ethToRepayBorrow) {
 
     console.log(`\nBorrow repaid.\n`);
 
-    /*     //const ethToRepayBorrow = 0.002; // hard coded borrow in contract
-        let result = await borrowContract.methods.myEthRepayBorrow(
-            ADDRESSES.cEthAddress,
-            web3.utils.toWei(ethToRepayBorrow.toString(), 'ether'),
-            300000 // gas for the "cEth.repayBorrow" function
-        ).send(fromMyWallet); */
-
-    await logBalancesBorrow(web3, myWalletAddress, cEth, cToken, underlying, ERC20.name, ERC20.decimals);
     return result;
 };
 
