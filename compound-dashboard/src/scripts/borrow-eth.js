@@ -13,7 +13,6 @@ export async function borrowETH(numETHToBorrow, underlyingAsCollateral) {
         console.log("Invalid parameter(s)")
         return;
     }
-
     console.log(`\nCalling borrowETH with ${underlyingAsCollateral} ${assetName} as collateral...\n`);
 
     const {
@@ -88,6 +87,8 @@ export async function borrowETH(numETHToBorrow, underlyingAsCollateral) {
     console.log(`\nNow attempting to borrow ${numETHToBorrow} ETH...`);
     const borrowResult = await cEth.methods.borrow(web3.utils.toWei(numETHToBorrow.toString(), 'ether')).send(fromMyWallet);
 
+    console.log(borrowResult);
+
     if (isNaN(borrowResult)) {
         console.log(`\nETH borrow successful.\n`);
     } else {
@@ -107,11 +108,5 @@ export async function borrowETH(numETHToBorrow, underlyingAsCollateral) {
 
 borrowETH().catch(async (err) => {
     console.error('ERROR:', err);
-    // Create "events" and "emit" them in your Solidity code.
-    // Current contract does not have any.
-    const web3 = getWeb3Instance();
-    const borrowContract = new web3.eth.Contract(borrowContractAbi, ADDRESSES.borrowContractAddress);
-    let logs = await borrowContract.getPastEvents('allEvents');
-    console.log('Logs: ', logs);
     return err;
 });

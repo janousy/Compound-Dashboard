@@ -72,9 +72,5 @@ export async function supplyErc20(amountToSupply) {
 
 supplyErc20().catch(async (err) => {
     console.error('Error: ', err);
-    const web3 = getWeb3Instance();
-    const supplyContract = new web3.eth.Contract(supplyContractAbi, ADDRESSES.supplyContractAddress);
-    const logs = await supplyContract.getPastEvents('allEvents');
-    //console.log('Logs: ', logs);
     return err;
 });

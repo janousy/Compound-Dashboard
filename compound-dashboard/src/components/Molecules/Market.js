@@ -1,7 +1,6 @@
 import React from "react";
 import { Tabs, Tab, Row, Col, Button } from "react-bootstrap";
 import '../../Styles/Molecules/Stats.css';
-import { cErcAbi, cEthAbi, erc20Abi } from "../../scripts/contracts/contracts.json";
 import { ImSpinner11 } from "react-icons/im";
 import { getBorrowMarketStats, getCollateralFactors, getExchangeRates, getSupplyMarketStats } from "../../scripts/utils";
 import { ADDRESSES } from "../../const/addresses";
@@ -98,13 +97,10 @@ class Market extends React.Component {
                                         }}
                                     />
                                     <div>
-                                        ExchangeRate cETH to ETH: {this.state.cEthExchangeRate}
+                                        ExchangeRate cETH to ETH: {this.state.cEthExchangeRate.toFixed(4)}
                                     </div>
                                     <div>
-                                        CollateralFactor: {this.state.cEtherCollateralFactor}
-                                    </div>
-                                    <div>
-                                        InterestRate:
+                                        CollateralFactor: {this.state.cEtherCollateralFactor.toFixed(4)}
                                     </div>
                                 </Row>
                             </Tab>
@@ -134,13 +130,10 @@ class Market extends React.Component {
                                         }}
                                     />
                                     <div>
-                                        ExchangeRate cErc20 to Erc20: {this.state.cErc20ExchangeRate}
+                                        ExchangeRate cErc20 to Erc20: {this.state.cErc20ExchangeRate.toFixed(4)}
                                     </div>
                                     <div>
-                                        CollateralFactor: {this.state.cErc20CollateralFactor}
-                                    </div>
-                                    <div>
-                                        InterestRate:
+                                        CollateralFactor: {this.state.cErc20CollateralFactor.toFixed(4)}
                                     </div>
                                 </Row>
                             </Tab>

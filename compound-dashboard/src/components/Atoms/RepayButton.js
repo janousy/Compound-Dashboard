@@ -2,8 +2,8 @@ import React from "react";
 import Row from "react-bootstrap/Row";
 import {Alert, Button, Dropdown, DropdownButton, FormControl, FormText, Spinner} from "react-bootstrap";
 import '../../Styles/Molecules/Borrow.css';
-import {repayErc20} from "../../scripts/repay-erc20-via-solidity";
-import {repayETH} from "../../scripts/repay-eth-via-solidity";
+import {repayErc20} from "../../scripts/repay-erc20";
+import {repayETH} from "../../scripts/repay-eth";
 import {CONSTANTS} from "../../const/const";
 
 

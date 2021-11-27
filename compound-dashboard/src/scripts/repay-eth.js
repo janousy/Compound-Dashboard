@@ -56,11 +56,5 @@ export async function repayETH(ethToRepayBorrow) {
 
 repayETH().catch(async (err) => {
     console.error('ERROR:', err);
-    // Create "events" and "emit" them in your Solidity code.
-    // Current contract does not have any.
-    const web3 = getWeb3Instance();
-    const borrowContract = new web3.eth.Contract(borrowContractAbi, ADDRESSES.borrowContractAddress);
-    let logs = await borrowContract.getPastEvents('allEvents');
-    console.log('Logs: ', logs);
     return err;
 });

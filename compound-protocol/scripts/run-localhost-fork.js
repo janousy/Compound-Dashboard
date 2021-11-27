@@ -12,7 +12,7 @@ const amounts = {
   // 'aave': 25,
   // 'bat': 100,
   // 'comp': 25,
-  'dai': 100,
+  'dai': 900,
   // 'link': 25,
   // 'mkr': 2,
   // 'sushi': 25,
@@ -50,6 +50,9 @@ async function seed(asset, amount) {
   const cTokenAddress = Compound.util.getAddress('c' + asset);
   provider = new Compound._ethers.providers.JsonRpcProvider(jsonRpcUrl);
   const accounts = await provider.listAccounts();
+
+  console.log('Wallet addresses of all accounts: ', '\n')
+  console.log(accounts);
 
   // Impersonate this address (only works in local testnet)
   console.log('Impersonating address on localhost... ', Compound.util.getAddress('c' + asset));

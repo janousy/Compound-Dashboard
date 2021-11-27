@@ -4,15 +4,15 @@ import { ADDRESSES, ERC20 } from "../const/addresses";
 import { abi as borrowContractAbi } from "./contracts/CompoundBorrow.json";
 
 export async function repayErc20(underlyingToRepayBorrow) {
-    console.log(`Calling repayErc20 with ${underlyingToRepayBorrow} Erc20..`);
-
-    const assetName = ERC20.name;
-    const underlyingDecimals = ERC20.decimals;
-
     if (!underlyingToRepayBorrow) {
         console.log("Invalid parameter(s)");
         return;
     }
+
+    console.log(`Calling repayErc20 with ${underlyingToRepayBorrow} Erc20..`);
+
+    const assetName = ERC20.name;
+    const underlyingDecimals = ERC20.decimals;
 
     const {
         cEthAbi,
@@ -53,11 +53,5 @@ export async function repayErc20(underlyingToRepayBorrow) {
 
 repayErc20().catch(async (err) => {
     console.error('ERROR:', err);
-    // Create "events" and "emit" them in your Solidity code.
-    // Current contract does not have any.
-    const web3 = getWeb3Instance();
-    const borrowContract = new web3.eth.Contract(borrowContractAbi, ADDRESSES.borrowContractAddress);
-    let logs = await borrowContract.getPastEvents('allEvents');
-    console.log('Logs: ', logs);
     return err;
 });

@@ -45,14 +45,12 @@ export async function supplyEth(amountToSupply) {
         value: web3.utils.toHex(web3.utils.toWei(amountToSupply.toString(), 'ether'))
     });
 
+    console.log("Successfully supplied");
+
     return result;
 }
 
 supplyEth().catch(async (err) => {
     console.error('Error: ', err);
-    const web3 = getWeb3Instance();
-    const supplyContract = new web3.eth.Contract(supplyContractAbi, ADDRESSES.supplyContractAddress);
-    const logs = await supplyContract.getPastEvents('allEvents');
-    //console.log('Logs: ', logs);
     return err;
 });

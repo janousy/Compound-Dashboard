@@ -1,9 +1,9 @@
-import React, {useState} from "react";
+import React from "react";
 import Row from "react-bootstrap/Row";
 import {Button, Dropdown, DropdownButton, FormControl, FormText, Spinner, Alert} from "react-bootstrap";
 import '../../Styles/Molecules/Borrow.css';
-import {borrowErc20} from "../../scripts/borrow-erc20-via-solidity";
-import {borrowETH} from "../../scripts/borrow-eth-via-solidity";
+import {borrowErc20} from "../../scripts/borrow-erc20";
+import {borrowETH} from "../../scripts/borrow-eth";
 import {CONSTANTS} from "../../const/const";
 
 
@@ -41,7 +41,6 @@ class BorrowButton extends React.Component {
             } else {
                 console.log("invalid currency");
             }
-            //console.log(JSON.stringify(transaction));
             this.setState({
                 showFunctionLoading: false,
                 showAlertSuccess: true,
@@ -94,7 +93,7 @@ class BorrowButton extends React.Component {
                         <Dropdown.Item eventKey="UZHETH">UZHETH</Dropdown.Item>
                         <Dropdown.Item eventKey="ERC20">ERC20</Dropdown.Item>
                     </DropdownButton>
-                    <Button disabled={this.state.borrowAmount <= 0 || this.state.collateralAmount <= 0}
+                    <Button disabled={this.state.borrowAmount <= 0 || this.state.collateralAmount < 0}
                             onClick={this.onClickBorrow}
                             className="Button mb-3 mt-2"
                             variant="primary">Borrow
