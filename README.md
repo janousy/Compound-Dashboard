@@ -3,7 +3,7 @@ This project was created in the context of the seminar on 'Blockchain Programmin
 
 The repository  is composed of two parts. The first component `compound-protocol` includes the required files and scripts to fork the Mainnet and deploy intermediary layers abstracting the compound protocol. The second component, the `compound-dashboard`, is a simple front-end, *i.e*., a dashboard that serves as a web interface to the compound protocol.
 
-![Dashboard Interface](resources\dashboard-interface.png)
+![Dashboard Interface](resources/dashboard-interface.png)
 
 ## Setting Up Compound
 The first component of this repository serves as an easy way to run a local Ethereum blockchain. To do so, the [Mainnet](https://ethereum.org/en/developers/docs/networks/)  is forked and seeded with assets. Thereby, one can interactively test how the Compound protocol works. This process was adapted from the Compound developer [guide](https://compound.finance/docs). For more details, look into their tutorials. Note that the scripts used in this section are adopted from the Compound contributors ([source](https://github.com/compound-developers/)).
