@@ -1,3 +1,4 @@
+
 # Deploying and Interacting with Compound
 This project was created in the context of the seminar on 'Blockchain Programming' HS21 at the University of Zurich, offered by the [UZH Blockchain Center](https://www.blockchain.uzh.ch/).  Within this seminar, our group investigated the deployment of [Compound](https://compound.finance/) - a financial protocol for autonomous interest rates - and it's application on mortgages. This repository only represents the technical setup.
 
@@ -61,3 +62,5 @@ cd compound-dashboard
 npm install
 npm start
 ```
+
+In case you added or modified any contracts in `compound-protocol/contracts/`, deployed them and want to tether your dashboard to it, you may want to adjust the abi definitions at `/compound-dashboard/src/scripts/contracts/contracts.json` and the contract addresses at `/compound-dashboard/src/const/addresses.js`.
