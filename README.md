@@ -1,5 +1,5 @@
 
-# Deploying and Interacting with Compound
+# Compound Setup and Interacting with Compound
 This project was created in the context of the seminar on 'Blockchain Programming' HS21 at the University of Zurich, offered by the [UZH Blockchain Center](https://www.blockchain.uzh.ch/).  Within this seminar, our group investigated the deployment of [Compound](https://compound.finance/) - a financial protocol for autonomous interest rates - and it's application on mortgages. This repository only represents the technical setup.
 
 The repository  is composed of two parts. The first component `compound-protocol` includes the required files and scripts to fork the Mainnet and deploy intermediary layers abstracting the compound protocol. The second component, the `compound-dashboard`, is a simple front-end, *i.e*., a dashboard that serves as a web interface to the compound protocol.
